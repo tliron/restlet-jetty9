@@ -10,4 +10,4 @@ Legal
 
 Distributed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
 
-"Restlet" is a registered trademark of [Noelios Technologies](http://restlet.org/download/legal).
+"Restlet" is a registered trademark of [Restlet S.A.S.](http://restlet.org/download/legal).
