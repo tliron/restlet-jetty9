@@ -50,9 +50,7 @@ public class RestletSslContextFactory extends SslContextFactory
 		try
 		{
 			if( getSslContext() == null )
-			{
 				super.checkKeyStore();
-			}
 		}
 		catch( IllegalStateException e )
 		{
@@ -75,7 +73,7 @@ public class RestletSslContextFactory extends SslContextFactory
 	@Override
 	public SSLServerSocket newSslServerSocket( String host, int port, int backlog ) throws IOException
 	{
-		SSLServerSocketFactory factory = getSslContext().getServerSocketFactory();
+		final SSLServerSocketFactory factory = getSslContext().getServerSocketFactory();
 		return (SSLServerSocket) ( ( host == null ) ? factory.createServerSocket( port, backlog ) : factory.createServerSocket( port, backlog, InetAddress.getByName( host ) ) );
 	}
 

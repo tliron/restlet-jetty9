@@ -39,12 +39,6 @@ import org.restlet.util.Series;
  */
 public class JettyCall extends ServerCall
 {
-	/** The wrapped Jetty HTTP channel. */
-	private final HttpChannel<?> channel;
-
-	/** Indicates if the request headers were parsed and added. */
-	private volatile boolean requestHeadersAdded;
-
 	/**
 	 * Constructor.
 	 * 
@@ -84,11 +78,14 @@ public class JettyCall extends ServerCall
 		}
 
 		// Fully complete the response
-		/*
-		 * try { getChannel().getResponse().complete(); } catch( IOException ex
-		 * ) { getLogger().log( Level.FINE, "Unable to complete the response",
-		 * ex ); }
-		 */
+		try
+		{
+			getChannel().getResponse().closeOutput();
+		}
+		catch( IOException ex )
+		{
+			getLogger().log( Level.FINE, "Unable to complete the response", ex );
+		}
 	}
 
 	@Override
@@ -100,20 +97,19 @@ public class JettyCall extends ServerCall
 	@Override
 	public List<Certificate> getCertificates()
 	{
-		Certificate[] certificateArray = (Certificate[]) getChannel().getRequest().getAttribute( "javax.servlet.request.X509Certificate" );
-
-		if( certificateArray != null )
-		{
-			return Arrays.asList( certificateArray );
-		}
-
+		final Object certificateArray = getChannel().getRequest().getAttribute( "javax.servlet.request.X509Certificate" );
+		if( certificateArray instanceof Certificate[] )
+			return Arrays.asList( (Certificate[]) certificateArray );
 		return null;
 	}
 
 	@Override
 	public String getCipherSuite()
 	{
-		return (String) getChannel().getRequest().getAttribute( "javax.servlet.request.cipher_suite" );
+		final Object cipherSuite = getChannel().getRequest().getAttribute( "javax.servlet.request.cipher_suite" );
+		if( cipherSuite instanceof String )
+			return (String) cipherSuite;
+		return null;
 	}
 
 	@Override
@@ -176,16 +172,12 @@ public class JettyCall extends ServerCall
 		if( !this.requestHeadersAdded )
 		{
 			// Copy the headers from the request object
-			String headerName;
-			String headerValue;
-
 			for( Enumeration<String> names = getChannel().getRequest().getHeaderNames(); names.hasMoreElements(); )
 			{
-				headerName = names.nextElement();
-
+				final String headerName = names.nextElement();
 				for( Enumeration<String> values = getChannel().getRequest().getHeaders( headerName ); values.hasMoreElements(); )
 				{
-					headerValue = values.nextElement();
+					final String headerValue = values.nextElement();
 					result.add( headerName, headerValue );
 				}
 			}
@@ -250,25 +242,17 @@ public class JettyCall extends ServerCall
 	public Integer getSslKeySize()
 	{
 		Integer keySize = (Integer) getChannel().getRequest().getAttribute( "javax.servlet.request.key_size" );
-
 		if( keySize == null )
-		{
 			keySize = super.getSslKeySize();
-		}
-
 		return keySize;
 	}
 
 	@Override
 	public String getSslSessionId()
 	{
-		Object sessionId = getChannel().getRequest().getAttribute( "javax.servlet.request.ssl_session_id" );
-
+		final Object sessionId = getChannel().getRequest().getAttribute( "javax.servlet.request.ssl_session_id" );
 		if( sessionId instanceof String )
-		{
 			return (String) sessionId;
-		}
-
 		return null;
 	}
 
@@ -293,11 +277,9 @@ public class JettyCall extends ServerCall
 	public void sendResponse( Response response ) throws IOException
 	{
 		// Add call headers
-		Header header;
-
 		for( Iterator<Header> iter = getResponseHeaders().iterator(); iter.hasNext(); )
 		{
-			header = iter.next();
+			Header header = iter.next();
 			getChannel().getResponse().addHeader( header.getName(), header.getValue() );
 		}
 
@@ -321,6 +303,11 @@ public class JettyCall extends ServerCall
 			getChannel().getResponse().setStatus( getStatusCode() );
 			super.sendResponse( response );
 		}
-
 	}
+
+	/** The wrapped Jetty HTTP channel. */
+	private final HttpChannel<?> channel;
+
+	/** Indicates if the request headers were parsed and added. */
+	private volatile boolean requestHeadersAdded;
 }

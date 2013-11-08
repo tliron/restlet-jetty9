@@ -12,33 +12,16 @@
 
 package org.restlet.ext.jetty9;
 
-import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
 /**
- * Jetty HTTP server connector. Here is the list of additional parameters that
- * are supported. They should be set in the Server's context before it is
- * started:
- * <table>
- * <tr>
- * <th>Parameter name</th>
- * <th>Value type</th>
- * <th>Default value</th>
- * <th>Description</th>
- * </tr>
- * <tr>
- * <td>type</td>
- * <td>int</td>
- * <td>1</td>
- * <td>The type of Jetty connector to use.<br>
- * 1 : Selecting NIO connector (Jetty's SelectChannelConnector class).<br>
- * 2 : Blocking NIO connector (Jetty's BlockingChannelConnector class).<br>
- * 3 : Blocking BIO connector (Jetty's SocketConnector class).</td>
- * </tr>
- * </table>
+ * Jetty 9 HTTP server connector.
  * 
- * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page</a>
+ * @see <a href="http://www.eclipse.org/jetty/">Jetty home page</a>
  * @author Jerome Louvel
  * @author Tal Liron
  */
@@ -57,14 +40,16 @@ public class HttpServerHelper extends JettyServerHelper
 	}
 
 	/**
-	 * Creates a new internal Jetty connector.
+	 * Creates a new Jetty connection factory.
 	 * 
-	 * @return A new internal Jetty connector.
+	 * @param configuration
+	 *        The HTTP configuration.
+	 * @return A new Jetty connection factory.
 	 */
 	@Override
-	protected ServerConnector createConnector( org.eclipse.jetty.server.Server server )
+	protected ConnectionFactory createConnectionFactory( HttpConfiguration configuration )
 	{
 		// Create and configure the Jetty HTTP connector
-		return new ServerConnector( server, getAcceptorThreads(), 0 );
+		return new HttpConnectionFactory( configuration );
 	}
 }

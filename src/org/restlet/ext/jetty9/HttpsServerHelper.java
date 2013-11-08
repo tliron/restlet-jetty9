@@ -14,7 +14,9 @@ package org.restlet.ext.jetty9;
 
 import java.util.logging.Level;
 
-import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -22,8 +24,8 @@ import org.restlet.ext.jetty9.internal.RestletSslContextFactory;
 import org.restlet.ext.ssl.DefaultSslContextFactory;
 
 /**
- * Jetty HTTPS server connector. Here is the list of additional parameters that
- * are supported. They should be set in the Server's context before it is
+ * Jetty 9 HTTPS server connector. Here is the list of additional parameters
+ * that are supported. They should be set in the Server's context before it is
  * started:
  * <table>
  * <tr>
@@ -33,28 +35,20 @@ import org.restlet.ext.ssl.DefaultSslContextFactory;
  * <th>Description</th>
  * </tr>
  * <tr>
- * <td>type</td>
- * <td>int</td>
- * <td>2</td>
- * <td>The type of Jetty connector to use.<br>
- * 1 : Selecting NIO connector (Jetty's SslSelectChannelConnector class).<br>
- * 2 : Blocking BIO connector (Jetty's SslSocketConnector class)</td>
- * </tr>
- * <tr>
  * <td>sslContextFactory</td>
  * <td>String</td>
  * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
  * <td>Let you specify a {@link SslContextFactory} qualified class name as a
  * parameter, or an instance as an attribute for a more complete and flexible
- * SSL context setting.</td>
+ * SSL context setting</td>
  * </tr>
  * </table>
  * For the default SSL parameters see the Javadocs of the
  * {@link DefaultSslContextFactory} class.
  * 
- * @see <a
- *      href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How
- *      to configure SSL for Jetty</a>
+ * @see <a href="http://www.eclipse.org/jetty/">Jetty home page</a>
+ * @see <a href="http://wiki.eclipse.org/Jetty/Howto/Configure_SSL">How to
+ *      configure SSL for Jetty</a>
  * @author Jerome Louvel
  * @author Tal Liron
  */
@@ -73,30 +67,24 @@ public class HttpsServerHelper extends JettyServerHelper
 	}
 
 	/**
-	 * Creates a new internal Jetty connector.
+	 * Creates a new Jetty connection factory.
 	 * 
-	 * @return A new internal Jetty connector.
+	 * @param configuration
+	 *        The HTTP configuration.
+	 * @return A new Jetty connection factory.
 	 */
 	@Override
-	protected ServerConnector createConnector( org.eclipse.jetty.server.Server server )
+	protected ConnectionFactory createConnectionFactory( HttpConfiguration configuration )
 	{
-		SslContextFactory sslContextFactory = null;
-
 		try
 		{
-			sslContextFactory = new RestletSslContextFactory( org.restlet.ext.ssl.internal.SslUtils.getSslContextFactory( this ) );
+			final SslContextFactory sslContextFactory = new RestletSslContextFactory( org.restlet.ext.ssl.internal.SslUtils.getSslContextFactory( this ) );
+			return new SslConnectionFactory( sslContextFactory, "http" );
 		}
 		catch( Exception e )
 		{
 			getLogger().log( Level.WARNING, "Unable to create the Jetty SSL context factory", e );
+			return null;
 		}
-
-		if( sslContextFactory != null )
-		{
-			// Create and configure the Jetty HTTP connector
-			return new ServerConnector( server, getAcceptorThreads(), 0, sslContextFactory );
-		}
-
-		return null;
 	}
 }

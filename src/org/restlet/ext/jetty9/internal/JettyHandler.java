@@ -37,10 +37,6 @@ import org.restlet.ext.jetty9.JettyServerHelper;
  */
 public class JettyHandler extends AbstractHandler
 {
-
-	/** The Restlet server helper. */
-	private final JettyServerHelper helper;
-
 	/**
 	 * Constructor for HTTP server connectors.
 	 * 
@@ -63,13 +59,9 @@ public class JettyHandler extends AbstractHandler
 	public JettyHandler( Server server, boolean secure )
 	{
 		if( secure )
-		{
 			this.helper = new HttpsServerHelper( server );
-		}
 		else
-		{
 			this.helper = new HttpServerHelper( server );
-		}
 	}
 
 	@Override
@@ -106,4 +98,7 @@ public class JettyHandler extends AbstractHandler
 		this.helper.handle( new JettyCall( this.helper.getHelped(), channel ) );
 		baseRequest.setHandled( true );
 	}
+
+	/** The Restlet server helper. */
+	private final JettyServerHelper helper;
 }
