@@ -1,12 +1,11 @@
 /**
- * Copyright 2013 Three Crickets LLC. The contents of this file are subject to
- * the terms of the Apache 2.0 license:
+ * Copyright 2013 Three Crickets LLC and Restlet S.A.S.
+ * <p>
+ * The contents of this file are subject to the terms of the Apache 2.0 license:
  * http://www.opensource.org/licenses/apache-2.0
  * <p>
- * This code is a derivative of code that is copyright 2005-2013 Restlet S.A.S.
- * <p>
- * That code was taken from the Restlet repository:
- * https://github.com/restlet/restlet-framework-java
+ * This code is a derivative of code that is copyright 2005-2013 Restlet S.A.S.,
+ * available at: https://github.com/restlet/restlet-framework-java
  * <p>
  * Restlet is a registered trademark of Restlet S.A.S.
  */
