@@ -8,8 +8,6 @@ The whole repository works as an Eclipse project. Build using Maven.
 Get It
 ------
 
-Hosted by [Three Crickets](http://threecrickets.com):
-
 You can download the latest binary and API documentation jars from
 [here](http://repository.threecrickets.com/maven/org/restlet/jse/restlet-jetty9/).
 
@@ -29,6 +27,7 @@ To install via Maven:
 		<version>[2.2-dev1,2.3)</version>
 	</dependency>
 
+Hosted by [Three Crickets](http://threecrickets.com).
 
 Legal
 -----
