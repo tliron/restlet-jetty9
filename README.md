@@ -5,6 +5,31 @@ As discussed in the [Restlet forum](http://restlet.tigris.org/ds/viewMessage.do?
 
 The whole repository works as an Eclipse project. Build using Maven.
 
+Get It
+------
+
+Hosted by [Three Crickets](http://threecrickets.com):
+
+You can download the latest binary and API documentation jars from
+[here](http://repository.threecrickets.com/maven/org/restlet/jse/restlet-jetty9/).
+
+You can browse the latest API documentation [here](http://threecrickets.com/api/java/restlet-jetty9/).
+
+To install via Maven:
+
+	<repository>
+		<id>three-crickets</id>  
+		<name>Three Crickets Repository</name>  
+		<url>http://repository.threecrickets.com/maven/</url>  
+	</repository>
+	
+	<dependency>
+		<groupId>org.restlet.jse</groupId>
+		<artifactId>restlet-jetty9</artifactId>
+		<version>[2.2-dev1,2.3)</version>
+	</dependency>
+
+
 Legal
 -----
 
