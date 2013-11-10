@@ -27,7 +27,7 @@ To install via Maven:
 		<version>[2.2-dev1,2.3)</version>
 	</dependency>
 
-Hosted by [Three Crickets](http://threecrickets.com).
+Hosted by [Three Crickets](http://threecrickets.com/).
 
 Legal
 -----
