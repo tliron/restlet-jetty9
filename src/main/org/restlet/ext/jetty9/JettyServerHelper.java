@@ -284,7 +284,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	}
 
 	/**
-	 * Connector acceptor thread count. Defaults to 0. When 0, Jetty will
+	 * Connector acceptor thread count. Defaults to -1. When -1, Jetty will
 	 * default to {@link Runtime#availableProcessors()} / 2, with a minimum of
 	 * 1.
 	 * 
@@ -292,18 +292,18 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	 */
 	public int getConnectorAcceptors()
 	{
-		return Integer.parseInt( getHelpedParameters().getFirstValue( "connector.acceptors", "0" ) );
+		return Integer.parseInt( getHelpedParameters().getFirstValue( "connector.acceptors", "-1" ) );
 	}
 
 	/**
-	 * Connector selector thread count. Defaults to 0. When 0, Jetty will
+	 * Connector selector thread count. Defaults to -1. When 0, Jetty will
 	 * default to {@link Runtime#availableProcessors()}.
 	 * 
 	 * @return Connector acceptor thread count.
 	 */
 	public int getConnectorSelectors()
 	{
-		return Integer.parseInt( getHelpedParameters().getFirstValue( "connector.selectors", "0" ) );
+		return Integer.parseInt( getHelpedParameters().getFirstValue( "connector.selectors", "-1" ) );
 	}
 
 	/**
