@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.restlet.jse</groupId>
 	<artifactId>restlet-jetty9</artifactId>
-	<version>2.2-dev2</version>
+	<version>2.2-dev3</version>
 	<build>
 		<sourceDirectory>src/main</sourceDirectory>
 		<resources>

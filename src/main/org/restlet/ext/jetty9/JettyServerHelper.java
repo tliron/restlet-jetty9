@@ -80,15 +80,15 @@ import org.restlet.ext.jetty9.internal.JettyCall;
  * <tr>
  * <td>connector.acceptors</td>
  * <td>int</td>
- * <td>0</td>
- * <td>Connector acceptor thread count; when 0, Jetty will default to
+ * <td>-1</td>
+ * <td>Connector acceptor thread count; when -1, Jetty will default to
  * {@link Runtime#availableProcessors()} / 2, with a minimum of 1</td>
  * </tr>
  * <tr>
  * <td>connector.selectors</td>
  * <td>int</td>
- * <td>0</td>
- * <td>Connector selector thread count; when 0, Jetty will default to
+ * <td>-1</td>
+ * <td>Connector selector thread count; when -1, Jetty will default to
  * {@link Runtime#availableProcessors()}</td>
  * </tr>
  * <tr>
