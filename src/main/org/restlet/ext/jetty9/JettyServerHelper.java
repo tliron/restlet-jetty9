@@ -219,6 +219,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		final org.eclipse.jetty.server.Server server = getWrappedServer();
 		final ServerConnector connector = (ServerConnector) server.getConnectors()[0];
 
+		getLogger().info( "Starting a Jetty HTTP/HTTPS server" );
+
 		server.start();
 
 		// We won't know the local port until after the server starts
@@ -228,6 +230,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	@Override
 	public void stop() throws Exception
 	{
+		getLogger().info( "Stopping a Jetty HTTP/HTTPS server" );
+
 		getWrappedServer().stop();
 
 		super.stop();

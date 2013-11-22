@@ -57,11 +57,9 @@ public class JettyClientCall extends ClientCall
 	 *        The method name.
 	 * @param requestUri
 	 *        The request URI.
-	 * @param hasEntity
-	 *        Indicates if the call will have an entity to send to the server.
 	 * @throws IOException
 	 */
-	public JettyClientCall( HttpClientHelper helper, final String method, final String requestUri, boolean hasEntity ) throws IOException
+	public JettyClientCall( HttpClientHelper helper, final String method, final String requestUri ) throws IOException
 	{
 		super( helper, method, requestUri );
 		this.clientHelper = helper;

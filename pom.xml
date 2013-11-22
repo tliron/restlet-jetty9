@@ -59,25 +59,25 @@
 		<dependency>
 			<groupId>org.restlet.jse</groupId>
 			<artifactId>org.restlet</artifactId>
-			<version>2.2-M5</version>
+			<version>[2.2-M5,2.3)</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.jse</groupId>
 			<artifactId>org.restlet.ext.ssl</artifactId>
-			<version>2.2-M5</version>
+			<version>[2.2-M5,2.3)</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>9.1.0.v20131115</version>
+			<version>[9.1.0,9.2)</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-client</artifactId>
-			<version>9.1.0.v20131115</version>
+			<version>[9.1.0,9.2)</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
