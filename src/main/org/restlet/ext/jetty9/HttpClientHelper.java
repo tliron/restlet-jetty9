@@ -23,6 +23,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.restlet.Client;
 import org.restlet.Request;
@@ -195,7 +197,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 		}
 		catch( IOException e )
 		{
-			getLogger().log( Level.WARNING, "Unable to create the HTTP client call", e );
+			getLogger().log( Level.WARNING, "Unable to create the Jetty HTTP/HTTPS client call", e );
 		}
 
 		return result;
@@ -445,7 +447,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 	}
 
 	/**
-	 * Defaults to null.
+	 * The cookie store. Defaults to null. When null, creates a new instance of
+	 * {@link java.net.InMemoryCookieStore}.
 	 * 
 	 * @return The cookie store.
 	 */
@@ -455,7 +458,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 	}
 
 	/**
-	 * Defaults to null.
+	 * The executor. Defaults to null. When null, creates a new instance of
+	 * {@link QueuedThreadPool}.
 	 * 
 	 * @return The executor.
 	 */
@@ -465,7 +469,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 	}
 
 	/**
-	 * Defaults to null.
+	 * The scheduler. Defaults to null. When null, creates a new instance of
+	 * {@link ScheduledExecutorScheduler}.
 	 * 
 	 * @return The scheduler.
 	 */
