@@ -32,7 +32,7 @@ import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.restlet.Server;
-import org.restlet.ext.jetty9.internal.JettyCall;
+import org.restlet.ext.jetty9.internal.JettyServerCall;
 
 /**
  * Abstract Jetty 9 Web server connector. Here is the list of parameters that
@@ -214,6 +214,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	@Override
 	public void start() throws Exception
 	{
+		super.start();
+
 		final org.eclipse.jetty.server.Server server = getWrappedServer();
 		final ServerConnector connector = (ServerConnector) server.getConnectors()[0];
 
@@ -227,6 +229,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	public void stop() throws Exception
 	{
 		getWrappedServer().stop();
+
+		super.stop();
 	}
 
 	/**
@@ -691,7 +695,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		@Override
 		public void handle( HttpChannel<?> channel ) throws IOException, ServletException
 		{
-			this.helper.handle( new JettyCall( this.helper.getHelped(), channel ) );
+			this.helper.handle( new JettyServerCall( this.helper.getHelped(), channel ) );
 		}
 
 		private final JettyServerHelper helper;

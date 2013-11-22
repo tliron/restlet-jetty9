@@ -37,7 +37,7 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  * @author Tal Liron
  */
-public class JettyCall extends ServerCall
+public class JettyServerCall extends ServerCall
 {
 	/**
 	 * Constructor.
@@ -47,7 +47,7 @@ public class JettyCall extends ServerCall
 	 * @param channel
 	 *        The wrapped Jetty HTTP channel.
 	 */
-	public JettyCall( Server server, HttpChannel<?> channel )
+	public JettyServerCall( Server server, HttpChannel<?> channel )
 	{
 		super( server );
 		this.channel = channel;
@@ -57,7 +57,6 @@ public class JettyCall extends ServerCall
 	/**
 	 * Closes the end point.
 	 */
-	@Override
 	public boolean abort()
 	{
 		getChannel().getEndPoint().close();
@@ -145,7 +144,6 @@ public class JettyCall extends ServerCall
 		return getChannel().getRequest().getMethod();
 	}
 
-	@Override
 	public InputStream getRequestEntityStream( long size )
 	{
 		try
@@ -188,7 +186,6 @@ public class JettyCall extends ServerCall
 		return result;
 	}
 
-	@Override
 	public InputStream getRequestHeadStream()
 	{
 		// Not available
@@ -212,7 +209,6 @@ public class JettyCall extends ServerCall
 	 * 
 	 * @return The response stream if it exists.
 	 */
-	@Override
 	public OutputStream getResponseEntityStream()
 	{
 		try

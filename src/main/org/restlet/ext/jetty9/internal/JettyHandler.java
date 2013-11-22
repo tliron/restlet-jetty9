@@ -64,20 +64,6 @@ public class JettyHandler extends AbstractHandler
 			this.helper = new HttpServerHelper( server );
 	}
 
-	@Override
-	protected void doStart() throws Exception
-	{
-		super.doStart();
-		this.helper.start();
-	}
-
-	@Override
-	protected void doStop() throws Exception
-	{
-		super.doStop();
-		this.helper.stop();
-	}
-
 	/**
 	 * Handles a Jetty call by converting it to a Restlet call and giving it for
 	 * processing to the Restlet server.
@@ -95,8 +81,22 @@ public class JettyHandler extends AbstractHandler
 	{
 		final HttpChannel<?> channel = HttpChannel.getCurrentHttpChannel();
 		final Request baseRequest = ( servletRequest instanceof Request ) ? (Request) servletRequest : channel.getRequest();
-		this.helper.handle( new JettyCall( this.helper.getHelped(), channel ) );
+		this.helper.handle( new JettyServerCall( this.helper.getHelped(), channel ) );
 		baseRequest.setHandled( true );
+	}
+
+	@Override
+	protected void doStart() throws Exception
+	{
+		super.doStart();
+		this.helper.start();
+	}
+
+	@Override
+	protected void doStop() throws Exception
+	{
+		super.doStop();
+		this.helper.stop();
 	}
 
 	/** The Restlet server helper. */

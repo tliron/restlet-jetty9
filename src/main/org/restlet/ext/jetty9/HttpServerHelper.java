@@ -46,7 +46,6 @@ public class HttpServerHelper extends JettyServerHelper
 	 *        The HTTP configuration.
 	 * @return A new Jetty connection factory.
 	 */
-	@Override
 	protected ConnectionFactory createConnectionFactory( HttpConfiguration configuration )
 	{
 		// Create and configure the Jetty HTTP connector
