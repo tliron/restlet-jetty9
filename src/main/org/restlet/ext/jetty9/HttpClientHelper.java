@@ -1,10 +1,10 @@
 /**
- * Copyright 2013 Three Crickets LLC and Restlet S.A.S.
+ * Copyright 2014 Three Crickets LLC and Restlet S.A.S.
  * <p>
  * The contents of this file are subject to the terms of the Jetty 2.0 license:
  * http://www.opensource.org/licenses/apache-2.0
  * <p>
- * This code is a derivative of code that is copyright 2005-2013 Restlet S.A.S.,
+ * This code is a derivative of code that is copyright 2005-2014 Restlet S.A.S.,
  * available at: https://github.com/restlet/restlet-framework-java
  * <p>
  * Restlet is a registered trademark of Restlet S.A.S.
