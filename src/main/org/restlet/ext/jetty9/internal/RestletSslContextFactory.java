@@ -39,7 +39,7 @@ public class RestletSslContextFactory extends SslContextFactory
 	 *        The Restlet SSL context factory to leverage.
 	 * @throws Exception
 	 */
-	public RestletSslContextFactory( org.restlet.ext.ssl.SslContextFactory restletSslContextFactory ) throws Exception
+	public RestletSslContextFactory( org.restlet.engine.ssl.SslContextFactory restletSslContextFactory ) throws Exception
 	{
 		setSslContext( restletSslContextFactory.createSslContext() );
 	}

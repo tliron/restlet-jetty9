@@ -19,9 +19,9 @@ import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.engine.ssl.DefaultSslContextFactory;
+import org.restlet.engine.ssl.SslContextFactory;
 import org.restlet.ext.jetty9.internal.RestletSslContextFactory;
-import org.restlet.ext.ssl.DefaultSslContextFactory;
-import org.restlet.ext.ssl.SslContextFactory;
 
 /**
  * Jetty 9 HTTPS server connector. Here is the list of additional parameters
@@ -77,7 +77,7 @@ public class HttpsServerHelper extends JettyServerHelper
 	{
 		try
 		{
-			final org.eclipse.jetty.util.ssl.SslContextFactory sslContextFactory = new RestletSslContextFactory( org.restlet.ext.ssl.internal.SslUtils.getSslContextFactory( this ) );
+			final org.eclipse.jetty.util.ssl.SslContextFactory sslContextFactory = new RestletSslContextFactory( org.restlet.engine.ssl.SslUtils.getSslContextFactory( this ) );
 			return new SslConnectionFactory( sslContextFactory, "http" );
 		}
 		catch( Exception e )

@@ -30,10 +30,10 @@ import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.engine.adapter.ClientCall;
+import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.ext.jetty9.internal.JettyClientCall;
 import org.restlet.ext.jetty9.internal.RestletSslContextFactory;
-import org.restlet.ext.ssl.DefaultSslContextFactory;
 
 /**
  * HTTP client connector using the Jetty project.<br>
@@ -489,7 +489,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 		SslContextFactory sslContextFactory = null;
 		try
 		{
-			sslContextFactory = new RestletSslContextFactory( org.restlet.ext.ssl.internal.SslUtils.getSslContextFactory( this ) );
+			sslContextFactory = new RestletSslContextFactory( org.restlet.engine.ssl.SslUtils.getSslContextFactory( this ) );
 		}
 		catch( Exception e )
 		{
