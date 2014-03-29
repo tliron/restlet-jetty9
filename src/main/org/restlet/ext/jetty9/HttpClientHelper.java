@@ -33,7 +33,6 @@ import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.ext.jetty9.internal.JettyClientCall;
-import org.restlet.ext.jetty9.internal.RestletSslContextFactory;
 
 /**
  * HTTP client connector using the Jetty project.<br>
@@ -489,7 +488,9 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 		SslContextFactory sslContextFactory = null;
 		try
 		{
-			sslContextFactory = new RestletSslContextFactory( org.restlet.engine.ssl.SslUtils.getSslContextFactory( this ) );
+			final org.restlet.engine.ssl.SslContextFactory restletSslContextFactory = org.restlet.engine.ssl.SslUtils.getSslContextFactory( this );
+			sslContextFactory = new org.eclipse.jetty.util.ssl.SslContextFactory();
+			sslContextFactory.setSslContext( restletSslContextFactory.createSslContext() );
 		}
 		catch( Exception e )
 		{

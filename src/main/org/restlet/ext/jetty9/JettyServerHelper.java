@@ -523,13 +523,13 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	}
 
 	/**
-	 * Creates a new internal Jetty connection factory.
+	 * Creates new internal Jetty connection factories.
 	 * 
 	 * @param configuration
 	 *        The HTTP configuration.
-	 * @return A new internal Jetty connection factory.
+	 * @return New internal Jetty connection factories.
 	 */
-	protected abstract ConnectionFactory createConnectionFactory( HttpConfiguration configuration );
+	protected abstract ConnectionFactory[] createConnectionFactories( HttpConfiguration configuration );
 
 	/**
 	 * Returns the wrapped Jetty server.
@@ -552,6 +552,21 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	protected void setWrappedServer( org.eclipse.jetty.server.Server wrappedServer )
 	{
 		this.wrappedServer = wrappedServer;
+	}
+
+	/**
+	 * Creates a Jetty HTTP configuration.
+	 * 
+	 * @return A Jetty HTTP configuration.
+	 */
+	private HttpConfiguration createConfiguration()
+	{
+		final HttpConfiguration configuration = new HttpConfiguration();
+		configuration.setHeaderCacheSize( getHttpHeaderCacheSize() );
+		configuration.setRequestHeaderSize( getHttpRequestHeaderSize() );
+		configuration.setResponseHeaderSize( getHttpResponseHeaderSize() );
+		configuration.setOutputBufferSize( getHttpOutputBufferSize() );
+		return configuration;
 	}
 
 	/**
@@ -604,7 +619,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	private Connector createConnector( org.eclipse.jetty.server.Server server )
 	{
 		final HttpConfiguration configuration = createConfiguration();
-		final ConnectionFactory connectionFactory = createConnectionFactory( configuration );
+		final ConnectionFactory[] connectionFactories = createConnectionFactories( configuration );
 
 		final int acceptors = getConnectorAcceptors();
 		final int selectors = getConnectorSelectors();
@@ -612,7 +627,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		final Scheduler scheduler = getConnectorScheduler();
 		final ByteBufferPool byteBufferPool = getConnectorByteBufferPool();
 
-		final ServerConnector connector = new ServerConnector( server, executor, scheduler, byteBufferPool, acceptors, selectors, connectionFactory );
+		final ServerConnector connector = new ServerConnector( server, executor, scheduler, byteBufferPool, acceptors, selectors, connectionFactories );
 
 		final String address = getHelped().getAddress();
 		if( address != null )
@@ -625,21 +640,6 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		connector.setStopTimeout( getConnectorStopTimeout() );
 
 		return connector;
-	}
-
-	/**
-	 * Creates a Jetty HTTP configuration.
-	 * 
-	 * @return A Jetty HTTP configuration.
-	 */
-	private HttpConfiguration createConfiguration()
-	{
-		final HttpConfiguration configuration = new HttpConfiguration();
-		configuration.setHeaderCacheSize( getHttpHeaderCacheSize() );
-		configuration.setRequestHeaderSize( getHttpRequestHeaderSize() );
-		configuration.setResponseHeaderSize( getHttpResponseHeaderSize() );
-		configuration.setOutputBufferSize( getHttpOutputBufferSize() );
-		return configuration;
 	}
 
 	/**
