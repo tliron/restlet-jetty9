@@ -75,6 +75,10 @@ public class JettyServerCall extends ServerCall
 		{
 			getLogger().log( Level.FINE, "Unable to flush the response", e );
 		}
+		catch( IllegalStateException e )
+		{
+			getLogger().log( Level.WARNING, "TODO 2" );
+		}
 
 		// Fully complete the response
 		try
@@ -297,7 +301,14 @@ public class JettyServerCall extends ServerCall
 		{
 			// Send the response entity
 			getChannel().getResponse().setStatus( getStatusCode() );
-			super.sendResponse( response );
+			try
+			{
+				super.sendResponse( response );
+			}
+			catch( IllegalStateException e )
+			{
+				getLogger().log( Level.WARNING, "TODO 1" );
+			}
 		}
 	}
 
