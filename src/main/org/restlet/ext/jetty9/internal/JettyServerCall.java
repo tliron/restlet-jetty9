@@ -71,9 +71,9 @@ public class JettyServerCall extends ServerCall
 		{
 			getChannel().getResponse().flushBuffer();
 		}
-		catch( IOException ex )
+		catch( IOException e )
 		{
-			getLogger().log( Level.FINE, "Unable to flush the response", ex );
+			getLogger().log( Level.FINE, "Unable to flush the response", e );
 		}
 
 		// Fully complete the response
@@ -81,9 +81,9 @@ public class JettyServerCall extends ServerCall
 		{
 			getChannel().getResponse().closeOutput();
 		}
-		catch( IOException ex )
+		catch( IOException e )
 		{
-			getLogger().log( Level.FINE, "Unable to complete the response", ex );
+			getLogger().log( Level.FINE, "Unable to complete the response", e );
 		}
 	}
 
@@ -130,7 +130,7 @@ public class JettyServerCall extends ServerCall
 	 */
 	public HttpChannel<?> getChannel()
 	{
-		return this.channel;
+		return channel;
 	}
 
 	/**
@@ -288,9 +288,9 @@ public class JettyServerCall extends ServerCall
 			{
 				getChannel().getResponse().sendError( getStatusCode(), getReasonPhrase() );
 			}
-			catch( IOException ioe )
+			catch( IOException e )
 			{
-				getLogger().log( Level.WARNING, "Unable to set the response error status", ioe );
+				getLogger().log( Level.WARNING, "Unable to set the response error status", e );
 			}
 		}
 		else
