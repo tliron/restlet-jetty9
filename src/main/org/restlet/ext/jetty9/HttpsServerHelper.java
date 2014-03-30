@@ -17,11 +17,11 @@ import java.util.logging.Level;
 import org.eclipse.jetty.server.AbstractConnectionFactory;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
-import org.restlet.engine.ssl.SslContextFactory;
+import org.restlet.engine.ssl.SslUtils;
 
 /**
  * Jetty 9 HTTPS server connector. Here is the list of additional parameters
@@ -75,12 +75,14 @@ public class HttpsServerHelper extends JettyServerHelper
 	 */
 	protected ConnectionFactory[] createConnectionFactories( HttpConfiguration configuration )
 	{
+		ConnectionFactory[] connectionFactories = super.createConnectionFactories( configuration );
+
 		try
 		{
-			final SslContextFactory sslContextFactory = org.restlet.engine.ssl.SslUtils.getSslContextFactory( this );
-			final org.eclipse.jetty.util.ssl.SslContextFactory jettySslContextFactory = new org.eclipse.jetty.util.ssl.SslContextFactory();
+			final org.restlet.engine.ssl.SslContextFactory sslContextFactory = SslUtils.getSslContextFactory( this );
+			final SslContextFactory jettySslContextFactory = new SslContextFactory();
 			jettySslContextFactory.setSslContext( sslContextFactory.createSslContext() );
-			return AbstractConnectionFactory.getFactories( jettySslContextFactory, new HttpConnectionFactory( configuration ) );
+			return AbstractConnectionFactory.getFactories( jettySslContextFactory, connectionFactories );
 		}
 		catch( Exception e )
 		{

@@ -12,9 +12,6 @@
 
 package org.restlet.ext.jetty9;
 
-import org.eclipse.jetty.server.ConnectionFactory;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
@@ -37,21 +34,5 @@ public class HttpServerHelper extends JettyServerHelper
 	{
 		super( server );
 		getProtocols().add( Protocol.HTTP );
-	}
-
-	/**
-	 * Creates new internal Jetty connection factories.
-	 * 
-	 * @param configuration
-	 *        The HTTP configuration.
-	 * @return New internal Jetty connection factories.
-	 */
-	protected ConnectionFactory[] createConnectionFactories( HttpConfiguration configuration )
-	{
-		// Create and configure the Jetty HTTP connector
-		return new ConnectionFactory[]
-		{
-			new HttpConnectionFactory( configuration )
-		};
 	}
 }
