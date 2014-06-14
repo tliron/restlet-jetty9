@@ -58,6 +58,7 @@ public class JettyClientCall extends ClientCall
 	 * @param requestUri
 	 *        The request URI.
 	 * @throws IOException
+	 *         In case of an I/O error
 	 */
 	public JettyClientCall( HttpClientHelper helper, final String method, final String requestUri ) throws IOException
 	{

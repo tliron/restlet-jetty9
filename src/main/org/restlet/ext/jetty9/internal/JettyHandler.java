@@ -77,7 +77,7 @@ public class JettyHandler extends AbstractHandler
 	 * @param servletResponse
 	 *        The Servlet response.
 	 */
-	public void handle( String target, Request arg1, HttpServletRequest servletRequest, HttpServletResponse servletResponse ) throws IOException, ServletException
+	public void handle( String target, Request request, HttpServletRequest servletRequest, HttpServletResponse servletResponse ) throws IOException, ServletException
 	{
 		final HttpChannel<?> channel = HttpChannel.getCurrentHttpChannel();
 		final Request baseRequest = ( servletRequest instanceof Request ) ? (Request) servletRequest : channel.getRequest();

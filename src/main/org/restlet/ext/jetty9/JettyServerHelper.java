@@ -588,7 +588,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		{
 			try
 			{
-				SPDYServerConnectionFactory.checkNPNAvailable();
+				SPDYServerConnectionFactory.checkProtocolNegotiationAvailable();
 			}
 			catch( Exception e )
 			{
