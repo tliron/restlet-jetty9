@@ -812,14 +812,28 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		@Override
 		public void handle( HttpChannel<?> channel ) throws IOException, ServletException
 		{
-			helper.handle( new JettyServerCall( helper.getHelped(), channel ) );
+			try
+			{
+				helper.handle( new JettyServerCall( helper.getHelped(), channel ) );
+			}
+			catch( Throwable e )
+			{
+				throw new IOException( "Restlet exception", e );
+			}
 		}
 
 		@Override
 		public void handleAsync( HttpChannel<?> channel ) throws IOException, ServletException
 		{
-			// TODO: how should we handle async?
-			helper.handle( new JettyServerCall( helper.getHelped(), channel ) );
+			// TODO: should we handle async differently?
+			try
+			{
+				helper.handle( new JettyServerCall( helper.getHelped(), channel ) );
+			}
+			catch( Throwable e )
+			{
+				throw new IOException( "Restlet exception", e );
+			}
 		}
 
 		private final JettyServerHelper helper;
