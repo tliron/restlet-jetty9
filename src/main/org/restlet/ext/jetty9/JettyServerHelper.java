@@ -818,6 +818,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 			}
 			catch( Throwable e )
 			{
+				channel.getEndPoint().close();
 				throw new IOException( "Restlet exception", e );
 			}
 		}
@@ -832,6 +833,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 			}
 			catch( Throwable e )
 			{
+				channel.getEndPoint().close();
 				throw new IOException( "Restlet exception", e );
 			}
 		}
