@@ -47,7 +47,7 @@ public class JettyServerCall extends ServerCall
 	 * @param channel
 	 *        The wrapped Jetty HTTP channel.
 	 */
-	public JettyServerCall( Server server, HttpChannel<?> channel )
+	public JettyServerCall( Server server, HttpChannel channel )
 	{
 		super( server );
 		this.channel = channel;
@@ -132,7 +132,7 @@ public class JettyServerCall extends ServerCall
 	 * 
 	 * @return The wrapped Jetty HTTP channel.
 	 */
-	public HttpChannel<?> getChannel()
+	public HttpChannel getChannel()
 	{
 		return channel;
 	}
@@ -205,7 +205,7 @@ public class JettyServerCall extends ServerCall
 	@Override
 	public String getRequestUri()
 	{
-		return getChannel().getRequest().getUri().toString();
+		return getChannel().getRequest().getRequestURI();
 	}
 
 	/**
@@ -313,7 +313,7 @@ public class JettyServerCall extends ServerCall
 	}
 
 	/** The wrapped Jetty HTTP channel. */
-	private final HttpChannel<?> channel;
+	private final HttpChannel channel;
 
 	/** Indicates if the request headers were parsed and added. */
 	private volatile boolean requestHeadersAdded;
