@@ -31,10 +31,10 @@ import org.eclipse.jetty.http.HttpFields;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
+import org.restlet.data.Header;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.adapter.ClientCall;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.jetty9.HttpClientHelper;
 import org.restlet.representation.Representation;
@@ -234,7 +234,7 @@ public class JettyClientCall extends ClientCall
 			long timeout = 5000;
 			this.httpResponse = (HttpResponse) this.inputStreamResponseListener.get( timeout, TimeUnit.MILLISECONDS );
 
-			result = new Status( getStatusCode(), null, getReasonPhrase(), null );
+			result = new Status( getStatusCode(), getReasonPhrase() );
 		}
 		catch( IOException e )
 		{

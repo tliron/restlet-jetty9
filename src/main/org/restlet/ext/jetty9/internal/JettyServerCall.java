@@ -26,9 +26,9 @@ import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.server.HttpChannel;
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.data.Header;
 import org.restlet.data.Status;
 import org.restlet.engine.adapter.ServerCall;
-import org.restlet.engine.header.Header;
 import org.restlet.util.Series;
 
 /**
@@ -47,7 +47,7 @@ public class JettyServerCall extends ServerCall
 	 * @param channel
 	 *        The wrapped Jetty HTTP channel.
 	 */
-	public JettyServerCall( Server server, HttpChannel channel )
+	public JettyServerCall( Server server, HttpChannel<?> channel )
 	{
 		super( server );
 		this.channel = channel;
@@ -132,7 +132,7 @@ public class JettyServerCall extends ServerCall
 	 * 
 	 * @return The wrapped Jetty HTTP channel.
 	 */
-	public HttpChannel getChannel()
+	public HttpChannel<?> getChannel()
 	{
 		return channel;
 	}
@@ -313,7 +313,7 @@ public class JettyServerCall extends ServerCall
 	}
 
 	/** The wrapped Jetty HTTP channel. */
-	private final HttpChannel channel;
+	private final HttpChannel<?> channel;
 
 	/** Indicates if the request headers were parsed and added. */
 	private volatile boolean requestHeadersAdded;
