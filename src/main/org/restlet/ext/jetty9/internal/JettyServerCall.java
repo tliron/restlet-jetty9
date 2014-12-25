@@ -205,7 +205,7 @@ public class JettyServerCall extends ServerCall
 	@Override
 	public String getRequestUri()
 	{
-		return getChannel().getRequest().getRequestURI();
+		return getChannel().getRequest().getUri().toString();
 	}
 
 	/**
