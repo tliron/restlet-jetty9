@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.concurrent.Executor;
-import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 
@@ -29,9 +28,6 @@ import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.LowResourceMonitor;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.spdy.server.NPNServerConnectionFactory;
-import org.eclipse.jetty.spdy.server.http.HTTPSPDYServerConnectionFactory;
-import org.eclipse.jetty.spdy.server.http.PushStrategy;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
@@ -43,7 +39,7 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * Abstract Jetty 9 Web server connector. Here is the list of parameters that
  * are supported. They should be set in the Server's context before it is
  * started:
- * <table>
+ * <table summary="parameters">
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -196,19 +192,6 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * <td>30000</td>
  * <td>Low resource monitor stop timeout in milliseconds; the maximum time
  * allowed for the service to shutdown</td>
- * </tr>
- * <tr>
- * <td>spdy.version</td>
- * <td>int</td>
- * <td>0</td>
- * <td>SPDY max version; can be 0, 2, or 3; if 0, SPDY is not used.</td>
- * </tr>
- * <tr>
- * <td>spdy.pushStrategy</td>
- * <td>String</td>
- * <td>null</td>
- * <td>SPDY push strategy; can be null or "referrer" (shortcut for
- * "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy") or a class name.</td>
  * </tr>
  * </table>
  * 
@@ -541,32 +524,6 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	}
 
 	/**
-	 * SPDY max version. Defaults to 0.
-	 * <p>
-	 * Can be 0, 2, or 3. If 0, SPDY is not used.
-	 * 
-	 * @return Low resource monitor stop timeout.
-	 */
-	public int getSpdyVersion()
-	{
-		return Integer.parseInt( getHelpedParameters().getFirstValue( "spdy.version", "0" ) );
-	}
-
-	/**
-	 * SPDY push strategy. Defaults to null.
-	 * <p>
-	 * Can be null or "referrer" (shortcut for
-	 * "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy") or a class
-	 * name.
-	 * 
-	 * @return SPDY push strategy or null.
-	 */
-	public String getSpdyPushStrategy()
-	{
-		return getHelpedParameters().getFirstValue( "spdy.pushStrategy" );
-	}
-
-	/**
 	 * Creates new internal Jetty connection factories.
 	 * 
 	 * @param configuration
@@ -577,6 +534,14 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	{
 		HttpConnectionFactory http = new HttpConnectionFactory( configuration );
 
+
+		// TODO
+		return new ConnectionFactory[]
+		{
+			http
+		};
+
+		/*
 		int spdyVersion = getSpdyVersion();
 		if( spdyVersion == 0 )
 			return new ConnectionFactory[]
@@ -585,14 +550,6 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 			};
 		else
 		{
-			/*
-			 * try { SPDYServerConnectionFactory.
-			 * checkProtocolNegotiationAvailable(); } catch( Exception e ) {
-			 * getLogger().log( Level.WARNING,
-			 * "Jetty NPN boot is not available in -Xbootclasspath", e ); return
-			 * null; }
-			 */
-
 			// Push strategy
 
 			String pushStrategyName = getSpdyPushStrategy();
@@ -614,8 +571,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 
 			// SDPY connection factories
 
-			HTTPSPDYServerConnectionFactory spdy3 = spdyVersion == 3 ? new HTTPSPDYServerConnectionFactory( 3, configuration, pushStrategy ) : null;
-			HTTPSPDYServerConnectionFactory spdy2 = new HTTPSPDYServerConnectionFactory( 2, configuration, pushStrategy );
+			HTTP2ServerConnectionFactory spdy3 = spdyVersion == 3 ? new HTTP2ServerConnectionFactory( 3, configuration, pushStrategy ) : null;
+			HTTP2ServerConnectionFactory spdy2 = new HTTP2ServerConnectionFactory( 2, configuration, pushStrategy );
 
 			// NPN connection factory
 
@@ -638,7 +595,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 				{
 					npn, spdy2, http
 				};
-		}
+		}*/
 	}
 
 	/**
@@ -807,7 +764,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		 *        The channel to handle.
 		 */
 		@Override
-		public void handle( HttpChannel<?> channel ) throws IOException, ServletException
+		public void handle( HttpChannel channel ) throws IOException, ServletException
 		{
 			try
 			{
@@ -821,7 +778,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		}
 
 		@Override
-		public void handleAsync( HttpChannel<?> channel ) throws IOException, ServletException
+		public void handleAsync( HttpChannel channel ) throws IOException, ServletException
 		{
 			// TODO: should we handle async differently?
 			try

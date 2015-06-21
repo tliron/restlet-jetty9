@@ -39,7 +39,7 @@ import org.restlet.ext.jetty9.internal.JettyClientCall;
  * <br>
  * Here is the list of parameters that are supported. They should be set in the
  * Client's context before it is started:
- * <table>
+ * <table summary="parameters">
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -72,13 +72,6 @@ import org.restlet.ext.jetty9.internal.JettyClientCall;
  * <td>15000</td>
  * <td>The max time in milliseconds a connection can take to connect to
  * destinations</td>
- * </tr>
- * <tr>
- * <td>dispatchIo</td>
- * <td>boolean</td>
- * <td>true</td>
- * <td>Whether to dispatch I/O operations from the selector thread to a
- * different thread</td>
  * </tr>
  * <tr>
  * <td>followRedirects</td>
@@ -278,23 +271,6 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 	}
 
 	/**
-	 * Whether to dispatch I/O operations from the selector thread to a
-	 * different thread. Defaults to true.
-	 * <p>
-	 * This implementation never blocks on I/O operation, but invokes
-	 * application callbacks that may take time to execute or block on other
-	 * I/O. If application callbacks are known to take time or block on I/O,
-	 * then this should be set to true. If application callbacks are known to be
-	 * quick and never block on I/O, then this may be set to false.
-	 * 
-	 * @return Whether to dispatch I/O.
-	 */
-	public boolean isDispatchIO()
-	{
-		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "dispatchIo", "true" ) );
-	}
-
-	/**
 	 * Whether to follow HTTP redirects. Defaults to true.
 	 * 
 	 * @return Whether to follow redirects.
@@ -447,7 +423,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 
 	/**
 	 * The cookie store. Defaults to null. When null, creates a new instance of
-	 * {@link java.net.InMemoryCookieStore}.
+	 * sun.net.www.protocol.http.InMemoryCookieStore.
 	 * 
 	 * @return The cookie store.
 	 */
@@ -499,18 +475,19 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 		final HttpClient httpClient = new HttpClient( sslContextFactory );
 
 		httpClient.setAddressResolutionTimeout( getAddressResolutionTimeout() );
+		// TODO: httpClient.setByteBufferPool
 		httpClient.setBindAddress( getBindAddress() );
 		httpClient.setConnectTimeout( getConnectTimeout() );
 		final CookieStore cookieStore = getCookieStore();
 		if( cookieStore != null )
 			httpClient.setCookieStore( cookieStore );
-		httpClient.setDispatchIO( isDispatchIO() );
 		httpClient.setExecutor( getExecutor() );
 		httpClient.setFollowRedirects( isFollowRedirects() );
 		httpClient.setIdleTimeout( getIdleTimeout() );
 		httpClient.setMaxConnectionsPerDestination( getMaxConnectionsPerDestination() );
 		httpClient.setMaxRedirects( getMaxRedirects() );
 		httpClient.setMaxRequestsQueuedPerDestination( getMaxRequestsQueuedPerDestination() );
+		// TODO: httpClient.setRemoveIdleDestinations
 		httpClient.setRequestBufferSize( getRequestBufferSize() );
 		httpClient.setResponseBufferSize( getResponseBufferSize() );
 		httpClient.setScheduler( getScheduler() );

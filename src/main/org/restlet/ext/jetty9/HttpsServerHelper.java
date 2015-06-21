@@ -27,7 +27,7 @@ import org.restlet.engine.ssl.SslUtils;
  * Jetty 9 HTTPS server connector. Here is the list of additional parameters
  * that are supported. They should be set in the Server's context before it is
  * started:
- * <table>
+ * <table summary="parameters">
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>

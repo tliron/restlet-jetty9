@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.restlet.jse</groupId>
 	<artifactId>org.restlet.ext.jetty9</artifactId>
-	<version>2.3-dev1</version>
+	<version>2.3-dev2</version>
 	<build>
 		<sourceDirectory>src/main</sourceDirectory>
 		<resources>
@@ -31,10 +31,11 @@
 					<!-- The Restlet jars report wrong JavaDoc locations -->
 					<detectLinks>false</detectLinks>
 					<links>
-						<link>http://restlet.org/learn/javadocs/2.2/jse/api/</link>
-						<link>http://restlet.org/learn/javadocs/2.2/jse/ext/</link>
-						<link>http://restlet.org/learn/javadocs/2.2/jse/engine/</link>
+						<link>http://restlet.com/technical-resources/restlet-framework/javadocs/2.3/jse/api/</link>
+						<link>http://restlet.com/technical-resources/restlet-framework/javadocs/2.3/jse/ext/</link>
+						<link>http://restlet.com/technical-resources/restlet-framework/javadocs/2.3/jse/engine/</link>
 						<link>http://download.eclipse.org/jetty/stable-9/apidocs/</link>
+						<link>https://docs.oracle.com/javase/8/docs/api/</link>
 					</links>
 				</configuration>
 				<executions>
@@ -70,19 +71,19 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>[9.2.6,9.3.0.M0)</version>
+			<version>[9.3.0,9.4.0)</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-client</artifactId>
-			<version>[9.2.6,9.3.0.M0)</version>
+			<version>[9.3.0,9.4.0)</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty.spdy</groupId>
-			<artifactId>spdy-http-server</artifactId>
-			<version>[9.2.6,9.3.0.M0)</version>
+			<groupId>org.eclipse.jetty.http2</groupId>
+			<artifactId>http2-server</artifactId>
+			<version>[9.3.0,9.4.0)</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
