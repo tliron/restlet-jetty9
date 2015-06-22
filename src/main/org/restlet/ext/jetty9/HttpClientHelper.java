@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Three Crickets LLC and Restlet S.A.S.
+ * Copyright 2014-2015 Three Crickets LLC and Restlet S.A.S.
  * <p>
  * The contents of this file are subject to the terms of the Jetty 2.0 license:
  * http://www.opensource.org/licenses/apache-2.0
@@ -202,7 +202,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 	 */
 	public HttpClient getHttpClient()
 	{
-		return this.httpClient;
+		return httpClient;
 	}
 
 	@Override
@@ -210,8 +210,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 	{
 		super.start();
 
-		if( this.httpClient == null )
-			this.httpClient = createHttpClient();
+		if( httpClient == null )
+			httpClient = createHttpClient();
 
 		final HttpClient httpClient = getHttpClient();
 		if( httpClient != null )

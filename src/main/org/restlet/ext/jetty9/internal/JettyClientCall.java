@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Three Crickets LLC and Restlet S.A.S.
+ * Copyright 2014-2015 Three Crickets LLC and Restlet S.A.S.
  * <p>
  * The contents of this file are subject to the terms of the Apache 2.0 license:
  * http://www.opensource.org/licenses/apache-2.0
@@ -63,14 +63,14 @@ public class JettyClientCall extends ClientCall
 	public JettyClientCall( HttpClientHelper helper, final String method, final String requestUri ) throws IOException
 	{
 		super( helper, method, requestUri );
-		this.clientHelper = helper;
+		clientHelper = helper;
 
-		if( requestUri.startsWith( "http" ) )
+		if( requestUri.startsWith( "http:" ) || requestUri.startsWith( "https:" ) )
 		{
-			this.httpRequest = (HttpRequest) helper.getHttpClient().newRequest( requestUri );
-			this.httpRequest.method( method );
+			httpRequest = (HttpRequest) helper.getHttpClient().newRequest( requestUri );
+			httpRequest.method( method );
 
-			setConfidential( this.httpRequest.getURI().getScheme().equalsIgnoreCase( Protocol.HTTPS.getSchemeName() ) );
+			setConfidential( httpRequest.getURI().getScheme().equalsIgnoreCase( Protocol.HTTPS.getSchemeName() ) );
 		}
 		else
 		{
@@ -85,7 +85,7 @@ public class JettyClientCall extends ClientCall
 	 */
 	public HttpRequest getHttpRequest()
 	{
-		return this.httpRequest;
+		return httpRequest;
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class JettyClientCall extends ClientCall
 	 */
 	public HttpResponse getHttpResponse()
 	{
-		return this.httpResponse;
+		return httpResponse;
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class JettyClientCall extends ClientCall
 	 */
 	public InputStreamResponseListener getInputStreamResponseListener()
 	{
-		return this.inputStreamResponseListener;
+		return inputStreamResponseListener;
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class JettyClientCall extends ClientCall
 	{
 		final Series<Header> result = super.getResponseHeaders();
 
-		if( !this.responseHeadersAdded )
+		if( !responseHeadersAdded )
 		{
 			final HttpResponse httpResponse = getHttpResponse();
 			if( httpResponse != null )
@@ -169,7 +169,7 @@ public class JettyClientCall extends ClientCall
 				}
 			}
 
-			this.responseHeadersAdded = true;
+			responseHeadersAdded = true;
 		}
 
 		return result;
@@ -184,7 +184,7 @@ public class JettyClientCall extends ClientCall
 	@Override
 	public String getServerAddress()
 	{
-		return this.httpRequest.getURI().getHost();
+		return httpRequest.getURI().getHost();
 	}
 
 	/**
@@ -218,27 +218,27 @@ public class JettyClientCall extends ClientCall
 
 			// Request entity
 			if( entity != null )
-				this.httpRequest.content( new InputStreamContentProvider( entity.getStream() ) );
+				httpRequest.content( new InputStreamContentProvider( entity.getStream() ) );
 
 			// Set the request headers
 			for( Header header : getRequestHeaders() )
 			{
 				final String name = header.getName();
 				if( !name.equals( HeaderConstants.HEADER_CONTENT_LENGTH ) )
-					this.httpRequest.header( name, header.getValue() );
+					httpRequest.header( name, header.getValue() );
 			}
 
 			// Ensure that the connection is active
-			this.inputStreamResponseListener = new InputStreamResponseListener();
-			this.httpRequest.send( this.inputStreamResponseListener );
-			long timeout = 5000;
-			this.httpResponse = (HttpResponse) this.inputStreamResponseListener.get( timeout, TimeUnit.MILLISECONDS );
+			inputStreamResponseListener = new InputStreamResponseListener();
+			httpRequest.send( inputStreamResponseListener );
+			long timeout = 5000; // TODO: this should be configurable
+			httpResponse = (HttpResponse) inputStreamResponseListener.get( timeout, TimeUnit.MILLISECONDS );
 
 			result = new Status( getStatusCode(), getReasonPhrase() );
 		}
 		catch( IOException e )
 		{
-			this.clientHelper.getLogger().log( Level.WARNING, "An error occurred while reading the request entity.", e );
+			clientHelper.getLogger().log( Level.WARNING, "An error occurred while reading the request entity.", e );
 			result = new Status( Status.CONNECTOR_ERROR_INTERNAL, e );
 
 			// Release the connection
@@ -246,7 +246,7 @@ public class JettyClientCall extends ClientCall
 		}
 		catch( TimeoutException e )
 		{
-			this.clientHelper.getLogger().log( Level.WARNING, "The HTTP request timed out.", e );
+			clientHelper.getLogger().log( Level.WARNING, "The HTTP request timed out.", e );
 			result = new Status( Status.CONNECTOR_ERROR_COMMUNICATION, e );
 
 			// Release the connection
@@ -254,7 +254,7 @@ public class JettyClientCall extends ClientCall
 		}
 		catch( InterruptedException e )
 		{
-			this.clientHelper.getLogger().log( Level.WARNING, "The HTTP request thread was interrupted.", e );
+			clientHelper.getLogger().log( Level.WARNING, "The HTTP request thread was interrupted.", e );
 			result = new Status( Status.CONNECTOR_ERROR_COMMUNICATION, e );
 
 			// Release the connection
@@ -262,7 +262,7 @@ public class JettyClientCall extends ClientCall
 		}
 		catch( ExecutionException e )
 		{
-			this.clientHelper.getLogger().log( Level.WARNING, "An error occurred while processing the HTTP request.", e );
+			clientHelper.getLogger().log( Level.WARNING, "An error occurred while processing the HTTP request.", e );
 			result = new Status( Status.CONNECTOR_ERROR_COMMUNICATION, e );
 
 			// Release the connection

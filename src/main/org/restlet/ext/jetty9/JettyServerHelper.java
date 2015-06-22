@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Three Crickets LLC and Restlet S.A.S.
+ * Copyright 2014-2015 Three Crickets LLC and Restlet S.A.S.
  * <p>
  * The contents of this file are subject to the terms of the Apache 2.0 license:
  * http://www.opensource.org/licenses/apache-2.0
@@ -534,7 +534,6 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	{
 		HttpConnectionFactory http = new HttpConnectionFactory( configuration );
 
-
 		// TODO
 		return new ConnectionFactory[]
 		{
@@ -542,60 +541,30 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		};
 
 		/*
-		int spdyVersion = getSpdyVersion();
-		if( spdyVersion == 0 )
-			return new ConnectionFactory[]
-			{
-				http
-			};
-		else
-		{
-			// Push strategy
-
-			String pushStrategyName = getSpdyPushStrategy();
-			if( pushStrategyName == null )
-				pushStrategyName = "org.eclipse.jetty.spdy.server.http.PushStrategy$None";
-			else if( "referrer".equalsIgnoreCase( pushStrategyName ) )
-				pushStrategyName = "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy";
-
-			PushStrategy pushStrategy;
-			try
-			{
-				pushStrategy = (PushStrategy) Class.forName( pushStrategyName ).newInstance();
-			}
-			catch( Exception e )
-			{
-				getLogger().log( Level.WARNING, "Unable to create the Jetty SPDY push strategy", e );
-				return null;
-			}
-
-			// SDPY connection factories
-
-			HTTP2ServerConnectionFactory spdy3 = spdyVersion == 3 ? new HTTP2ServerConnectionFactory( 3, configuration, pushStrategy ) : null;
-			HTTP2ServerConnectionFactory spdy2 = new HTTP2ServerConnectionFactory( 2, configuration, pushStrategy );
-
-			// NPN connection factory
-
-			NPNServerConnectionFactory npn;
-			if( spdyVersion == 3 )
-				npn = new NPNServerConnectionFactory( spdy3.getProtocol(), spdy2.getProtocol(), http.getProtocol() );
-			else
-				npn = new NPNServerConnectionFactory( spdy2.getProtocol(), http.getProtocol() );
-			npn.setDefaultProtocol( http.getProtocol() );
-
-			// All factories
-
-			if( spdyVersion == 3 )
-				return new ConnectionFactory[]
-				{
-					npn, spdy3, spdy2, http
-				};
-			else
-				return new ConnectionFactory[]
-				{
-					npn, spdy2, http
-				};
-		}*/
+		 * int spdyVersion = getSpdyVersion(); if( spdyVersion == 0 ) return new
+		 * ConnectionFactory[] { http }; else { // Push strategy String
+		 * pushStrategyName = getSpdyPushStrategy(); if( pushStrategyName ==
+		 * null ) pushStrategyName =
+		 * "org.eclipse.jetty.spdy.server.http.PushStrategy$None"; else if(
+		 * "referrer".equalsIgnoreCase( pushStrategyName ) ) pushStrategyName =
+		 * "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy";
+		 * PushStrategy pushStrategy; try { pushStrategy = (PushStrategy)
+		 * Class.forName( pushStrategyName ).newInstance(); } catch( Exception e
+		 * ) { getLogger().log( Level.WARNING,
+		 * "Unable to create the Jetty SPDY push strategy", e ); return null; }
+		 * // SDPY connection factories HTTP2ServerConnectionFactory spdy3 =
+		 * spdyVersion == 3 ? new HTTP2ServerConnectionFactory( 3,
+		 * configuration, pushStrategy ) : null; HTTP2ServerConnectionFactory
+		 * spdy2 = new HTTP2ServerConnectionFactory( 2, configuration,
+		 * pushStrategy ); // NPN connection factory NPNServerConnectionFactory
+		 * npn; if( spdyVersion == 3 ) npn = new NPNServerConnectionFactory(
+		 * spdy3.getProtocol(), spdy2.getProtocol(), http.getProtocol() ); else
+		 * npn = new NPNServerConnectionFactory( spdy2.getProtocol(),
+		 * http.getProtocol() ); npn.setDefaultProtocol( http.getProtocol() );
+		 * // All factories if( spdyVersion == 3 ) return new
+		 * ConnectionFactory[] { npn, spdy3, spdy2, http }; else return new
+		 * ConnectionFactory[] { npn, spdy2, http }; }
+		 */
 	}
 
 	/**
@@ -605,9 +574,9 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	 */
 	protected org.eclipse.jetty.server.Server getWrappedServer()
 	{
-		if( this.wrappedServer == null )
-			this.wrappedServer = createServer();
-		return this.wrappedServer;
+		if( wrappedServer == null )
+			wrappedServer = createServer();
+		return wrappedServer;
 	}
 
 	/**
@@ -746,15 +715,15 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		/**
 		 * Constructor.
 		 * 
-		 * @param server
+		 * @param helper
 		 *        The Jetty HTTP server.
 		 * @param threadPool
 		 *        The thread pool.
 		 */
-		public WrappedServer( JettyServerHelper server, ThreadPool threadPool )
+		public WrappedServer( JettyServerHelper helper, ThreadPool threadPool )
 		{
 			super( threadPool );
-			this.helper = server;
+			this.helper = helper;
 		}
 
 		/**

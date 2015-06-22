@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Three Crickets LLC and Restlet S.A.S.
+ * Copyright 2014-2015 Three Crickets LLC and Restlet S.A.S.
  * <p>
  * The contents of this file are subject to the terms of the Apache 2.0 license:
  * http://www.opensource.org/licenses/apache-2.0
@@ -18,7 +18,6 @@ import java.io.OutputStream;
 import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -51,7 +50,6 @@ public class JettyServerCall extends ServerCall
 	{
 		super( server );
 		this.channel = channel;
-		this.requestHeadersAdded = false;
 	}
 
 	/**
@@ -74,10 +72,6 @@ public class JettyServerCall extends ServerCall
 		catch( IOException e )
 		{
 			getLogger().log( Level.FINE, "Unable to flush the response", e );
-		}
-		catch( IllegalStateException e )
-		{
-			getLogger().log( Level.WARNING, "TODO 2" );
 		}
 
 		// Fully complete the response
@@ -171,7 +165,7 @@ public class JettyServerCall extends ServerCall
 	{
 		final Series<Header> result = super.getRequestHeaders();
 
-		if( !this.requestHeadersAdded )
+		if( !requestHeadersAdded )
 		{
 			// Copy the headers from the request object
 			for( Enumeration<String> names = getChannel().getRequest().getHeaderNames(); names.hasMoreElements(); )
@@ -184,7 +178,7 @@ public class JettyServerCall extends ServerCall
 				}
 			}
 
-			this.requestHeadersAdded = true;
+			requestHeadersAdded = true;
 		}
 
 		return result;
@@ -205,7 +199,7 @@ public class JettyServerCall extends ServerCall
 	@Override
 	public String getRequestUri()
 	{
-		return getChannel().getRequest().getRequestURI();
+		return getChannel().getRequest().getHttpURI().getPathQuery();
 	}
 
 	/**
@@ -241,10 +235,10 @@ public class JettyServerCall extends ServerCall
 	@Override
 	public Integer getSslKeySize()
 	{
-		Integer keySize = (Integer) getChannel().getRequest().getAttribute( "javax.servlet.request.key_size" );
-		if( keySize == null )
-			keySize = super.getSslKeySize();
-		return keySize;
+		final Object keySize = getChannel().getRequest().getAttribute( "javax.servlet.request.key_size" );
+		if( keySize instanceof Integer )
+			return (Integer) keySize;
+		return super.getSslKeySize();
 	}
 
 	@Override
@@ -277,11 +271,8 @@ public class JettyServerCall extends ServerCall
 	public void sendResponse( Response response ) throws IOException
 	{
 		// Add call headers
-		for( Iterator<Header> iter = getResponseHeaders().iterator(); iter.hasNext(); )
-		{
-			Header header = iter.next();
+		for( Header header : getResponseHeaders() )
 			getChannel().getResponse().addHeader( header.getName(), header.getValue() );
-		}
 
 		// Set the status code in the response. We do this after adding the
 		// headers because when we have to rely on the 'sendError' method,
@@ -301,14 +292,7 @@ public class JettyServerCall extends ServerCall
 		{
 			// Send the response entity
 			getChannel().getResponse().setStatus( getStatusCode() );
-			try
-			{
-				super.sendResponse( response );
-			}
-			catch( IllegalStateException e )
-			{
-				getLogger().log( Level.WARNING, "TODO 1" );
-			}
+			super.sendResponse( response );
 		}
 	}
 

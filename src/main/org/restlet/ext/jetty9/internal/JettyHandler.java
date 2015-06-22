@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Three Crickets LLC and Restlet S.A.S.
+ * Copyright 2014-2015 Three Crickets LLC and Restlet S.A.S.
  * <p>
  * The contents of this file are subject to the terms of the Apache 2.0 license:
  * http://www.opensource.org/licenses/apache-2.0
@@ -59,9 +59,9 @@ public class JettyHandler extends AbstractHandler
 	public JettyHandler( Server server, boolean secure )
 	{
 		if( secure )
-			this.helper = new HttpsServerHelper( server );
+			helper = new HttpsServerHelper( server );
 		else
-			this.helper = new HttpServerHelper( server );
+			helper = new HttpServerHelper( server );
 	}
 
 	/**
@@ -79,24 +79,27 @@ public class JettyHandler extends AbstractHandler
 	 */
 	public void handle( String target, Request request, HttpServletRequest servletRequest, HttpServletResponse servletResponse ) throws IOException, ServletException
 	{
+		if( request.isHandled() )
+			return;
+
 		final HttpChannel channel = request.getHttpChannel();
-		final Request baseRequest = ( servletRequest instanceof Request ) ? (Request) servletRequest : channel.getRequest();
-		this.helper.handle( new JettyServerCall( this.helper.getHelped(), channel ) );
-		baseRequest.setHandled( true );
+		helper.handle( new JettyServerCall( helper.getHelped(), channel ) );
+
+		request.setHandled( true );
 	}
 
 	@Override
 	protected void doStart() throws Exception
 	{
 		super.doStart();
-		this.helper.start();
+		helper.start();
 	}
 
 	@Override
 	protected void doStop() throws Exception
 	{
 		super.doStop();
-		this.helper.stop();
+		helper.stop();
 	}
 
 	/** The Restlet server helper. */
