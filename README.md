@@ -1,7 +1,7 @@
 Jetty 9 connector for Restlet 2.2
 =================================
 
-This Restlet extension allows you to use [Jetty](http://www.eclipse.org/jetty/) 9.1 as both a
+This Restlet extension allows you to use [Jetty](http://www.eclipse.org/jetty/) 9.3 as both a
 server and client connector, for both HTTP and HTTPS.
 
 As discussed in the [Restlet forum](http://restlet.tigris.org/ds/viewMessage.do?dsForumId=4447&dsMessageId=3067974).
@@ -27,7 +27,7 @@ To install via Maven:
 	<dependency>
 		<groupId>org.restlet.jse</groupId>
 		<artifactId>restlet-jetty9</artifactId>
-		<version>[2.2-dev1,2.3)</version>
+		<version>[2.3-dev1,2.4)</version>
 	</dependency>
 
 Hosted by [Three Crickets](http://threecrickets.com/).

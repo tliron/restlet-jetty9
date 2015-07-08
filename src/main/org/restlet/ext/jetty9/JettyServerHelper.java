@@ -167,6 +167,12 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * <td>Low resource monitor, whether to check if we're low on threads</td>
  * </tr>
  * <tr>
+ * <td>lowResource.maxConnections</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>Low resource monitor max connections; when 0, the check is disabled</td>
+ * </tr>
+ * <tr>
  * <td>lowResource.maxMemory</td>
  * <td>int</td>
  * <td>0</td>
@@ -174,10 +180,10 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * memory used is calculated as (totalMemory-freeMemory)</td>
  * </tr>
  * <tr>
- * <td>lowResource.maxConnections</td>
+ * <td>lowResource.maxTime</td>
  * <td>int</td>
  * <td>0</td>
- * <td>Low resource monitor max connections; when 0, the check is disabled</td>
+ * <td>TODO</td>
  * </tr>
  * <tr>
  * <td>lowResource.idleTimeout</td>
@@ -476,6 +482,17 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	}
 
 	/**
+	 * Low resource monitor max connections. Defaults to 0. When 0, the check is
+	 * disabled.
+	 * 
+	 * @return Low resource monitor max connections.
+	 */
+	public int getLowResourceMonitorMaxConnections()
+	{
+		return Integer.parseInt( getHelpedParameters().getFirstValue( "lowResource.maxConnections", "0" ) );
+	}
+
+	/**
 	 * Low resource monitor max memory in bytes. Defaults to 0. When 0, the
 	 * check disabled.
 	 * <p>
@@ -489,14 +506,13 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	}
 
 	/**
-	 * Low resource monitor max connections. Defaults to 0. When 0, the check is
-	 * disabled.
+	 * TODO
 	 * 
-	 * @return Low resource monitor max connections.
+	 * @return
 	 */
-	public int getLowResourceMonitorMaxConnections()
+	public int getLowResourceMonitorMaxTime()
 	{
-		return Integer.parseInt( getHelpedParameters().getFirstValue( "lowResource.maxConnections", "0" ) );
+		return Integer.parseInt( getHelpedParameters().getFirstValue( "lowResource.maxTime", "0" ) );
 	}
 
 	/**
@@ -602,6 +618,13 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		configuration.setRequestHeaderSize( getHttpRequestHeaderSize() );
 		configuration.setResponseHeaderSize( getHttpResponseHeaderSize() );
 		configuration.setOutputBufferSize( getHttpOutputBufferSize() );
+		// configuration.setDelayDispatchUntilContent( delay );
+		// configuration.setOutputAggregationSize( outputAggregationSize );
+		// configuration.setPersistentConnectionsEnabled(
+		// persistentConnectionsEnabled );
+		// configuration.setSendDateHeader( sendDateHeader );
+		// configuration.setSendServerVersion( sendServerVersion );
+		// configuration.setSendXPoweredBy( sendXPoweredBy );
 		return configuration;
 	}
 
@@ -642,6 +665,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		threadPool.setThreadsPriority( getThreadPoolThreadsPriority() );
 		threadPool.setIdleTimeout( getThreadPoolIdleTimeout() );
 		threadPool.setStopTimeout( getThreadPoolStopTimeout() );
+		// threadPool.setDaemon( daemon );
+		// threadPool.setDetailedDump( detailedDump );
 		return threadPool;
 	}
 
@@ -674,6 +699,9 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		connector.setIdleTimeout( getConnectorIdleTimeout() );
 		connector.setSoLingerTime( getConnectorSoLingerTime() );
 		connector.setStopTimeout( getConnectorStopTimeout() );
+		// connector.setReuseAddress
+		// connector.setAcceptorPriorityDelta( arg0 );
+		// connector.setInheritChannel( inheritChannel );
 
 		return connector;
 	}
@@ -694,8 +722,9 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 			lowResourceMonitor.setMonitoredConnectors( Arrays.asList( server.getConnectors() ) );
 			lowResourceMonitor.setPeriod( period );
 			lowResourceMonitor.setMonitorThreads( getLowResourceMonitorThreads() );
-			lowResourceMonitor.setMaxMemory( getLowResourceMonitorMaxMemory() );
 			lowResourceMonitor.setMaxConnections( getLowResourceMonitorMaxConnections() );
+			lowResourceMonitor.setMaxMemory( getLowResourceMonitorMaxMemory() );
+			lowResourceMonitor.setMaxLowResourcesTime( getLowResourceMonitorMaxTime() );
 			lowResourceMonitor.setLowResourcesIdleTimeout( getLowResourceMonitorIdleTimeout() );
 			lowResourceMonitor.setStopTimeout( getLowResourceMonitorStopTimeout() );
 			server.addBean( lowResourceMonitor );

@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
@@ -103,6 +104,12 @@ import org.restlet.ext.jetty9.internal.JettyClientCall;
  * <td>int</td>
  * <td>1024</td>
  * <td>Sets the max number of requests that may be queued to a destination</td>
+ * </tr>
+ * <tr>
+ * <td>removeIdleDestinations</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>TODO</td>
  * </tr>
  * <tr>
  * <td>requestBufferSize</td>
@@ -246,6 +253,16 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 	}
 
 	/**
+	 * TODO
+	 * 
+	 * @return
+	 */
+	public ByteBufferPool getByteBufferPool()
+	{
+		return null;
+	}
+
+	/**
 	 * The address to bind socket channels to. Default to null.
 	 * 
 	 * @return The bind address or null.
@@ -336,6 +353,16 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 	public int getMaxRequestsQueuedPerDestination()
 	{
 		return Integer.parseInt( getHelpedParameters().getFirstValue( "maxRequestsQueuedPerDestination", "1024" ) );
+	}
+
+	/**
+	 * TODO
+	 * 
+	 * @return
+	 */
+	public boolean getRemoveIdleDestinations()
+	{
+		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "removeIdleDestinations", "false" ) );
 	}
 
 	/**
@@ -475,7 +502,9 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 		final HttpClient httpClient = new HttpClient( sslContextFactory );
 
 		httpClient.setAddressResolutionTimeout( getAddressResolutionTimeout() );
-		// TODO: httpClient.setByteBufferPool
+		final ByteBufferPool byteBufferPool = getByteBufferPool();
+		if( byteBufferPool != null )
+			httpClient.setByteBufferPool( byteBufferPool );
 		httpClient.setBindAddress( getBindAddress() );
 		httpClient.setConnectTimeout( getConnectTimeout() );
 		final CookieStore cookieStore = getCookieStore();
@@ -487,7 +516,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 		httpClient.setMaxConnectionsPerDestination( getMaxConnectionsPerDestination() );
 		httpClient.setMaxRedirects( getMaxRedirects() );
 		httpClient.setMaxRequestsQueuedPerDestination( getMaxRequestsQueuedPerDestination() );
-		// TODO: httpClient.setRemoveIdleDestinations
+		httpClient.setRemoveIdleDestinations( getRemoveIdleDestinations() );
 		httpClient.setRequestBufferSize( getRequestBufferSize() );
 		httpClient.setResponseBufferSize( getResponseBufferSize() );
 		httpClient.setScheduler( getScheduler() );
