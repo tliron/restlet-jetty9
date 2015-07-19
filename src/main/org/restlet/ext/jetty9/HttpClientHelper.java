@@ -23,6 +23,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.ByteBufferPool;
+import org.eclipse.jetty.io.MappedByteBufferPool;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
@@ -109,7 +110,8 @@ import org.restlet.ext.jetty9.internal.JettyClientCall;
  * <td>removeIdleDestinations</td>
  * <td>boolean</td>
  * <td>false</td>
- * <td>TODO</td>
+ * <td>Whether destinations that have no connections (nor active nor idle)
+ * should be removed</td>
  * </tr>
  * <tr>
  * <td>requestBufferSize</td>
@@ -146,7 +148,8 @@ import org.restlet.ext.jetty9.internal.JettyClientCall;
  * <td>userAgentField</td>
  * <td>String</td>
  * <td>null</td>
- * <td>The "User-Agent" HTTP header string; when null, uses the Jetty default</td>
+ * <td>The "User-Agent" HTTP header string; when null, uses the Jetty default
+ * </td>
  * </tr>
  * <tr>
  * <td>sslContextFactory</td>
@@ -253,17 +256,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 	}
 
 	/**
-	 * TODO
-	 * 
-	 * @return
-	 */
-	public ByteBufferPool getByteBufferPool()
-	{
-		return null;
-	}
-
-	/**
-	 * The address to bind socket channels to. Default to null.
+	 * The address to bind socket channels to. Defaults to null.
 	 * 
 	 * @return The bind address or null.
 	 */
@@ -273,6 +266,17 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 		final String bindPort = getHelpedParameters().getFirstValue( "bindPort", null );
 		if( ( bindAddress != null ) && ( bindPort != null ) )
 			return new InetSocketAddress( bindAddress, Integer.parseInt( bindPort ) );
+		return null;
+	}
+
+	/**
+	 * The {@link ByteBufferPool} of this {@link HttpClient}. When null, uses a
+	 * {@link MappedByteBufferPool}. Defaults to null.
+	 * 
+	 * @return The byte buffer pool or null.
+	 */
+	public ByteBufferPool getByteBufferPool()
+	{
 		return null;
 	}
 
@@ -356,9 +360,17 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 	}
 
 	/**
-	 * TODO
-	 * 
-	 * @return
+	 * Whether destinations that have no connections (nor active nor idle)
+	 * should be removed.
+	 * <p>
+	 * Applications typically make request to a limited number of destinations
+	 * so keeping destinations around is not a problem for the memory or the GC.
+	 * However, for applications that hit millions of different destinations
+	 * (e.g. a spider bot) it would be useful to be able to remove the old
+	 * destinations that won't be visited anymore and leave space for new
+	 * destinations.
+	 *
+	 * @return Whether destinations that have no connections should be removed.
 	 */
 	public boolean getRemoveIdleDestinations()
 	{
@@ -502,10 +514,10 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 		final HttpClient httpClient = new HttpClient( sslContextFactory );
 
 		httpClient.setAddressResolutionTimeout( getAddressResolutionTimeout() );
+		httpClient.setBindAddress( getBindAddress() );
 		final ByteBufferPool byteBufferPool = getByteBufferPool();
 		if( byteBufferPool != null )
 			httpClient.setByteBufferPool( byteBufferPool );
-		httpClient.setBindAddress( getBindAddress() );
 		httpClient.setConnectTimeout( getConnectTimeout() );
 		final CookieStore cookieStore = getCookieStore();
 		if( cookieStore != null )

@@ -14,6 +14,7 @@ package org.restlet.ext.jetty9;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.channels.ServerSocketChannel;
 import java.util.Arrays;
 import java.util.concurrent.Executor;
 
@@ -122,6 +123,24 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * service to shutdown</td>
  * </tr>
  * <tr>
+ * <td>connector.reuseAddress</td>
+ * <td>boolean</td>
+ * <td>true</td>
+ * <td>Whether the server socket reuses addresses</td>
+ * </tr>
+ * <tr>
+ * <td>connector.acceptorPriorityDelta</td>
+ * <td>int</td>
+ * <td>-2</td>
+ * <td>Set the acceptor thread priority delta</td>
+ * </tr>
+ * <tr>
+ * <td>connector.inheritChannel</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Sets whether this connector uses a channel inherited from the JVM</td>
+ * </tr>
+ * <tr>
  * <td>http.headerCacheSize</td>
  * <td>int</td>
  * <td>512</td>
@@ -145,13 +164,50 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * however, larger headers will also consume more memory</td>
  * </tr>
  * <tr>
- * <td>http.outputBufferSize</td>
+ * <td>http.bufferSize</td>
  * <td>int</td>
  * <td>32*1024</td>
  * <td>HTTP output buffer size in bytes; a larger buffer can improve performance
  * by allowing a content producer to run without blocking, however larger
  * buffers consume more memory and may induce some latency before a client
  * starts processing the content</td>
+ * </tr>
+ * <tr>
+ * <td>http.delayDispatchUntilContent</td>
+ * <td>boolean</td>
+ * <td>true</td>
+ * <td>If true, delay the application dispatch until content is available</td>
+ * </tr>
+ * <tr>
+ * <td>http.aggregationSize</td>
+ * <td>int</td>
+ * <td>32*1024/4</td>
+ * <td>Set the max size of the response content write that is copied into the
+ * aggregate buffer</td>
+ * </tr>
+ * <tr>
+ * <td>http.persistentConnectionsEnabled</td>
+ * <td>boolean</td>
+ * <td>true</td>
+ * <td>True if HTTP/1 persistent connection are enabled</td>
+ * </tr>
+ * <tr>
+ * <td>http.sendDateHeader</td>
+ * <td>boolean</td>
+ * <td>true</td>
+ * <td>If true, include the Date in HTTP headers</td>
+ * </tr>
+ * <tr>
+ * <td>http.sendVersionHeader</td>
+ * <td>boolean</td>
+ * <td>true</td>
+ * <td>If true, send the Server header in responses</td>
+ * </tr>
+ * <tr>
+ * <td>http.sendXPoweredBy</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>If true, send the X-Powered-By header in responses</td>
  * </tr>
  * <tr>
  * <td>lowResource.period</td>
@@ -176,14 +232,15 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * <td>lowResource.maxMemory</td>
  * <td>int</td>
  * <td>0</td>
- * <td>Low resource monitor max memory in bytes; when 0, the check disabled;
+ * <td>Low resource monitor max memory in bytes; when 0, the check is disabled;
  * memory used is calculated as (totalMemory-freeMemory)</td>
  * </tr>
  * <tr>
  * <td>lowResource.maxTime</td>
  * <td>int</td>
  * <td>0</td>
- * <td>TODO</td>
+ * <td>The time in milliseconds that a low resource state can persist before the
+ * low resource idle timeout is reapplied to all connections</td>
  * </tr>
  * <tr>
  * <td>lowResource.idleTimeout</td>
@@ -203,6 +260,9 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * 
  * @see <a href="http://www.eclipse.org/jetty/">Jetty home page</a>
  * @author Jerome Louvel
+ * @author Tal Liron
+ */
+/**
  * @author Tal Liron
  */
 public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpServerHelper
@@ -408,6 +468,53 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	}
 
 	/**
+	 * Whether the server socket reuses addresses. Defaults to true.
+	 * 
+	 * @return Connector reuses addresses.
+	 */
+	public boolean getConnectorReuseAddress()
+	{
+		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "lowResource.reuseAddress", "true" ) );
+	}
+
+	/**
+	 * Set the acceptor thread priority delta.
+	 * <p>
+	 * This allows the acceptor thread to run at a different priority. Typically
+	 * this would be used to lower the priority to give preference to handling
+	 * previously accepted connections rather than accepting new connections.
+	 * <p>
+	 * Defaults to -2.
+	 * 
+	 * @return Connector acceptor priority delta.
+	 */
+	public int getConnectorAcceptorPriorityDelta()
+	{
+		return Integer.parseInt( getHelpedParameters().getFirstValue( "connector.acceptorPriorityDelta", "-2" ) );
+	}
+
+	/**
+	 * Sets whether this connector uses a channel inherited from the JVM.
+	 * <p>
+	 * If true, the connector first tries to inherit from a channel provided by
+	 * the system. If there is no inherited channel available, or if the
+	 * inherited channel is not usable, then it will fall back using
+	 * {@link ServerSocketChannel}.
+	 * <p>
+	 * Use it with xinetd/inetd, to launch an instance of Jetty on demand. The
+	 * port used to access pages on the Jetty instance is the same as the port
+	 * used to launch Jetty.
+	 * <p>
+	 * Defaults to false.
+	 * 
+	 * @return Connector inherit channel.
+	 */
+	public boolean getConnectorInheritChannel()
+	{
+		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "lowResource.inheritChannel", "false" ) );
+	}
+
+	/**
 	 * HTTP header cache size in bytes. Defaults to 512.
 	 * 
 	 * @return HTTP header cache size.
@@ -456,7 +563,72 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	 */
 	public int getHttpOutputBufferSize()
 	{
-		return Integer.parseInt( getHelpedParameters().getFirstValue( "http.outputBufferSize", "32768" ) );
+		return Integer.parseInt( getHelpedParameters().getFirstValue( "http.bufferSize", "32768" ) );
+	}
+
+	/**
+	 * If true, delay the application dispatch until content is available.
+	 * Defaults to true.
+	 * 
+	 * @return HTTP output delay dispatch until content.
+	 */
+	public boolean getHttpOutputDelayDispatchUntilContent()
+	{
+		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "http.delayDispatchUntilContent", "true" ) );
+	}
+
+	/**
+	 * Set the max size of the response content write that is copied into the
+	 * aggregate buffer. Writes that are smaller of this size are copied into
+	 * the aggregate buffer, while writes that are larger of this size will
+	 * cause the aggregate buffer to be flushed and the write to be executed
+	 * without being copied. Defaults to 32*1024/4.
+	 * 
+	 * @return HTTP output aggregation size.
+	 */
+	public int getHttpOutputAggregationSize()
+	{
+		return Integer.parseInt( getHelpedParameters().getFirstValue( "http.aggregationSize", "8192" ) );
+	}
+
+	/**
+	 * True if HTTP/1 persistent connection are enabled. Defaults to true.
+	 * 
+	 * @return HTTP output persistent connections enabled.
+	 */
+	public boolean getHttpOutputPersistentConnectionsEnabled()
+	{
+		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "http.persistentConnectionsEnabled", "true" ) );
+	}
+
+	/**
+	 * If true, include the Date in HTTP headers. Defaults to true.
+	 * 
+	 * @return HTTP output send date header.
+	 */
+	public boolean getHttpOutputSendDateHeader()
+	{
+		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "http.sendDateHeader", "true" ) );
+	}
+
+	/**
+	 * If true, send the Server header in responses. Defaults to true.
+	 * 
+	 * @return HTTP output send version header.
+	 */
+	public boolean getHttpOutputSendVersionHeader()
+	{
+		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "http.sendVersionHeader", "true" ) );
+	}
+
+	/**
+	 * If true, send the X-Powered-By header in responses. Defaults to false.
+	 * 
+	 * @return HTTP output send X-Powered-By
+	 */
+	public boolean getHttpOutputSendXPoweredBy()
+	{
+		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "http.sendXPoweredBy", "false" ) );
 	}
 
 	/**
@@ -494,7 +666,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 
 	/**
 	 * Low resource monitor max memory in bytes. Defaults to 0. When 0, the
-	 * check disabled.
+	 * check is disabled.
 	 * <p>
 	 * Memory used is calculated as (totalMemory-freeMemory).
 	 * 
@@ -506,9 +678,11 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	}
 
 	/**
-	 * TODO
+	 * The time in milliseconds that a low resource state can persist before the
+	 * low resource idle timeout is reapplied to all connections. When 0, the
+	 * low resource state can persist forever. Defaults to 0.
 	 * 
-	 * @return
+	 * @return Low resource monitor max time.
 	 */
 	public int getLowResourceMonitorMaxTime()
 	{
@@ -618,13 +792,12 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		configuration.setRequestHeaderSize( getHttpRequestHeaderSize() );
 		configuration.setResponseHeaderSize( getHttpResponseHeaderSize() );
 		configuration.setOutputBufferSize( getHttpOutputBufferSize() );
-		// configuration.setDelayDispatchUntilContent( delay );
-		// configuration.setOutputAggregationSize( outputAggregationSize );
-		// configuration.setPersistentConnectionsEnabled(
-		// persistentConnectionsEnabled );
-		// configuration.setSendDateHeader( sendDateHeader );
-		// configuration.setSendServerVersion( sendServerVersion );
-		// configuration.setSendXPoweredBy( sendXPoweredBy );
+		configuration.setDelayDispatchUntilContent( getHttpOutputDelayDispatchUntilContent() );
+		configuration.setOutputAggregationSize( getHttpOutputAggregationSize() );
+		configuration.setPersistentConnectionsEnabled( getHttpOutputPersistentConnectionsEnabled() );
+		configuration.setSendDateHeader( getHttpOutputSendDateHeader() );
+		configuration.setSendServerVersion( getHttpOutputSendVersionHeader() );
+		configuration.setSendXPoweredBy( getHttpOutputSendXPoweredBy() );
 		return configuration;
 	}
 
@@ -699,9 +872,9 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		connector.setIdleTimeout( getConnectorIdleTimeout() );
 		connector.setSoLingerTime( getConnectorSoLingerTime() );
 		connector.setStopTimeout( getConnectorStopTimeout() );
-		// connector.setReuseAddress
-		// connector.setAcceptorPriorityDelta( arg0 );
-		// connector.setInheritChannel( inheritChannel );
+		connector.setReuseAddress( getConnectorReuseAddress() );
+		connector.setAcceptorPriorityDelta( getConnectorAcceptorPriorityDelta() );
+		connector.setInheritChannel( getConnectorInheritChannel() );
 
 		return connector;
 	}
@@ -779,15 +952,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 		public void handleAsync( HttpChannel channel ) throws IOException, ServletException
 		{
 			// TODO: should we handle async differently?
-			try
-			{
-				helper.handle( new JettyServerCall( helper.getHelped(), channel ) );
-			}
-			catch( Throwable e )
-			{
-				channel.getEndPoint().close();
-				throw new IOException( "Restlet exception", e );
-			}
+			handle( channel );
 		}
 
 		private final JettyServerHelper helper;
