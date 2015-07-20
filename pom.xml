@@ -56,7 +56,7 @@
 			<url>http://maven.restlet.org</url>
 		</repository>
 		<repository>
-			<id>local</id>
+			<id>dev</id>
 			<name>Local repository</name>
 			<url>file:///Depot/Repository</url>
 		</repository>
@@ -83,6 +83,12 @@
 		<dependency>
 			<groupId>org.eclipse.jetty.http2</groupId>
 			<artifactId>http2-server</artifactId>
+			<version>[9.3.0,9.4.0)</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-alpn-server</artifactId>
 			<version>[9.3.0,9.4.0)</version>
 			<scope>provided</scope>
 		</dependency>

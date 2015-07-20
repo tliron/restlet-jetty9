@@ -16,10 +16,14 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.channels.ServerSocketChannel;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.concurrent.Executor;
 
 import javax.servlet.ServletException;
 
+import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
+import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
+import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -28,6 +32,7 @@ import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.LowResourceMonitor;
+import org.eclipse.jetty.server.NegotiatingServerConnectionFactory;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
@@ -208,6 +213,18 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * <td>boolean</td>
  * <td>false</td>
  * <td>If true, send the X-Powered-By header in responses</td>
+ * </tr>
+ * <tr>
+ * <td>http.h2</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Whether to support HTTP/2</td>
+ * </tr>
+ * <tr>
+ * <td>http.h2c</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Whether to support HTTP/2 cleartext (unencrypted)</td>
  * </tr>
  * <tr>
  * <td>lowResource.period</td>
@@ -632,6 +649,26 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	}
 
 	/**
+	 * Whether to support HTTP/2. Defaults to false.
+	 * 
+	 * @return HTTP/2 support.
+	 */
+	public boolean getHttp2()
+	{
+		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "http.h2", "false" ) );
+	}
+
+	/**
+	 * Whether to support HTTP/2 cleartext (unencrypted).
+	 * 
+	 * @return HTTP/2 cleartext support. Defaults to false.
+	 */
+	public boolean getHttp2c()
+	{
+		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "http.h2c", "false" ) );
+	}
+
+	/**
 	 * Low resource monitor period in milliseconds. Defaults to 1000. When 0,
 	 * low resource monitoring is disabled.
 	 * 
@@ -722,13 +759,42 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	 */
 	protected ConnectionFactory[] createConnectionFactories( HttpConfiguration configuration )
 	{
-		HttpConnectionFactory http = new HttpConnectionFactory( configuration );
+		final LinkedList<ConnectionFactory> connectionFactories = new LinkedList<ConnectionFactory>();
 
-		// TODO
-		return new ConnectionFactory[]
+		NegotiatingServerConnectionFactory negotiator = null;
+
+		// HTTP/2
+		if( getHttp2() )
 		{
-			http
-		};
+			// ALPN negotiator
+			NegotiatingServerConnectionFactory.checkProtocolNegotiationAvailable();
+			negotiator = new ALPNServerConnectionFactory();
+
+			connectionFactories.add( new HTTP2ServerConnectionFactory( configuration ) );
+		}
+
+		// HTTP/2 cleartext
+		if( getHttp2c() )
+			connectionFactories.add( new HTTP2CServerConnectionFactory( configuration ) );
+
+		// HTTP/1.1
+		connectionFactories.add( new HttpConnectionFactory( configuration ) );
+
+		if( negotiator != null )
+		{
+			// Negotiate all protocols in order
+			for( ConnectionFactory connectionFactory : connectionFactories )
+				for( String protocol : connectionFactory.getProtocols() )
+					negotiator.getNegotiatedProtocols().add( protocol.toLowerCase() );
+
+			// Default to HTTP/1.1
+			negotiator.setDefaultProtocol( connectionFactories.getLast().getProtocol().toLowerCase() );
+
+			// The negotiator should be the first factory
+			connectionFactories.add( 0, negotiator );
+		}
+
+		return connectionFactories.toArray( new ConnectionFactory[connectionFactories.size()] );
 
 		/*
 		 * int spdyVersion = getSpdyVersion(); if( spdyVersion == 0 ) return new
