@@ -62,7 +62,7 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * <td>connector.acceptors</td>
  * <td>int</td>
  * <td>-1</td>
- * <td>Connector acceptor thread count; when < 0, Jetty will default to
+ * <td>Connector acceptor thread count; when &lt; 0, Jetty will default to
  * {@link Runtime#availableProcessors()} / 8, with a minimum of 4; when 0, Jetty
  * will use the selector threads instead</td>
  * </tr>
@@ -97,7 +97,7 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * <td>connector.selectors</td>
  * <td>int</td>
  * <td>-1</td>
- * <td>Connector selector thread count; when <= 0, Jetty will default to
+ * <td>Connector selector thread count; when &lt;= 0, Jetty will default to
  * {@link Runtime#availableProcessors()} / 2, with a minimum of 4.</td>
  * </tr>
  * <tr>
@@ -339,7 +339,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	}
 
 	/**
-	 * Connector acceptor thread count. Defaults to -1. When < 0, Jetty will
+	 * Connector acceptor thread count. Defaults to -1. When &lt; 0, Jetty will
 	 * default to {@link Runtime#availableProcessors()} / 8, with a minimum of
 	 * 4. When 0, Jetty will use the selector threads instead.
 	 * 
@@ -443,7 +443,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	}
 
 	/**
-	 * Connector selector thread count. Defaults to -1. When <= 0, Jetty will
+	 * Connector selector thread count. Defaults to -1. When &lt;= 0, Jetty will
 	 * default to {@link Runtime#availableProcessors()} / 2, with a minimum of
 	 * 4.
 	 * 
