@@ -123,7 +123,7 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * <tr>
  * <td>http.2c</td>
  * <td>boolean</td>
- * <td>false</td>
+ * <td>true</td>
  * <td>Whether to support HTTP/2 cleartext (unencrypted)</td>
  * </tr>
  * <tr>
@@ -490,13 +490,13 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	}
 
 	/**
-	 * Whether to support HTTP/2 cleartext (unencrypted).
+	 * Whether to support HTTP/2 cleartext (unencrypted). Defaults to true.
 	 * 
-	 * @return HTTP/2 cleartext support. Defaults to false.
+	 * @return HTTP/2 cleartext support.
 	 */
 	public boolean getHttp2c()
 	{
-		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "http.2c", "false" ) );
+		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "http.2c", "true" ) );
 	}
 
 	/**
@@ -765,22 +765,26 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 
 		NegotiatingServerConnectionFactory negotiator = null;
 
-		// HTTP/2
 		if( getHttp2() )
 		{
-			// ALPN negotiator
+			// This will throw an exception if protocol negotiation is not
+			// available
 			NegotiatingServerConnectionFactory.checkProtocolNegotiationAvailable();
-			negotiator = new ALPNServerConnectionFactory();
 
-			connectionFactories.add( new HTTP2ServerConnectionFactory( configuration ) );
+			// ALPN negotiator
+			negotiator = new ALPNServerConnectionFactory();
 		}
+
+		// HTTP/2
+		if( getHttp2() )
+			connectionFactories.add( new HTTP2ServerConnectionFactory( configuration ) );
+
+		// HTTP/1.1
+		connectionFactories.add( new HttpConnectionFactory( configuration ) );
 
 		// HTTP/2 cleartext
 		if( getHttp2c() )
 			connectionFactories.add( new HTTP2CServerConnectionFactory( configuration ) );
-
-		// HTTP/1.1
-		connectionFactories.add( new HttpConnectionFactory( configuration ) );
 
 		if( negotiator != null )
 		{
