@@ -280,9 +280,6 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * @author Jerome Louvel
  * @author Tal Liron
  */
-/**
- * @author Tal Liron
- */
 public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpServerHelper
 {
 	/**
