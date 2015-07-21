@@ -64,10 +64,12 @@ public class JettyServerCall extends ServerCall
 	@Override
 	public void complete()
 	{
+		final org.eclipse.jetty.server.Response response = getChannel().getResponse();
+
 		// Flush the response
 		try
 		{
-			getChannel().getResponse().flushBuffer();
+			response.flushBuffer();
 		}
 		catch( IOException e )
 		{
@@ -77,7 +79,7 @@ public class JettyServerCall extends ServerCall
 		// Fully complete the response
 		try
 		{
-			getChannel().getResponse().closeOutput();
+			response.closeOutput();
 		}
 		catch( IOException e )
 		{
@@ -236,8 +238,8 @@ public class JettyServerCall extends ServerCall
 	public Integer getSslKeySize()
 	{
 		final Object keySize = getChannel().getRequest().getAttribute( "javax.servlet.request.key_size" );
-		if( keySize instanceof Integer )
-			return (Integer) keySize;
+		if( keySize instanceof Number )
+			return ( (Number) keySize ).intValue();
 		return super.getSslKeySize();
 	}
 
@@ -270,9 +272,11 @@ public class JettyServerCall extends ServerCall
 	@Override
 	public void sendResponse( Response response ) throws IOException
 	{
+		final org.eclipse.jetty.server.Response jettyResponse = getChannel().getResponse();
+
 		// Add call headers
 		for( Header header : getResponseHeaders() )
-			getChannel().getResponse().addHeader( header.getName(), header.getValue() );
+			jettyResponse.addHeader( header.getName(), header.getValue() );
 
 		// Set the status code in the response. We do this after adding the
 		// headers because when we have to rely on the 'sendError' method,
@@ -281,7 +285,7 @@ public class JettyServerCall extends ServerCall
 		{
 			try
 			{
-				getChannel().getResponse().sendError( getStatusCode(), getReasonPhrase() );
+				jettyResponse.sendError( getStatusCode(), getReasonPhrase() );
 			}
 			catch( IOException e )
 			{
@@ -291,7 +295,7 @@ public class JettyServerCall extends ServerCall
 		else
 		{
 			// Send the response entity
-			getChannel().getResponse().setStatus( getStatusCode() );
+			jettyResponse.setStatus( getStatusCode() );
 			super.sendResponse( response );
 		}
 	}

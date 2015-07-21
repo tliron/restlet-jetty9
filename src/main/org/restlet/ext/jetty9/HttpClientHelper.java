@@ -145,6 +145,12 @@ import org.restlet.ext.jetty9.internal.JettyClientCall;
  * <td>Whether TCP_NODELAY is enabled</td>
  * </tr>
  * <tr>
+ * <td>timeout</td>
+ * <td>long</td>
+ * <td>5000</td>
+ * <td>Request timeout in milliseconds</td>
+ * </tr>
+ * <tr>
  * <td>userAgentField</td>
  * <td>String</td>
  * <td>null</td>
@@ -447,6 +453,18 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 	public boolean isTcpNoDelay()
 	{
 		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "tcpNoDelay", "true" ) );
+	}
+
+	/**
+	 * Request timeout in milliseconds. Defaults to 5000.
+	 * <p>
+	 * The maximum time allowed for a request to receive a response.
+	 * 
+	 * @return The request timeout.
+	 */
+	public long getTimeout()
+	{
+		return Long.parseLong( getHelpedParameters().getFirstValue( "timeout", "5000" ) );
 	}
 
 	/**

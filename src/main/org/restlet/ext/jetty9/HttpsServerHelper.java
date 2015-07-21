@@ -12,10 +12,6 @@
 
 package org.restlet.ext.jetty9;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.eclipse.jetty.server.AbstractConnectionFactory;
@@ -26,6 +22,7 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.engine.ssl.SslUtils;
+import org.restlet.ext.jetty9.internal.Http2Utils;
 
 /**
  * Jetty 9 HTTPS server connector. Here is the list of additional parameters
@@ -59,15 +56,6 @@ import org.restlet.engine.ssl.SslUtils;
 public class HttpsServerHelper extends JettyServerHelper
 {
 	/**
-	 * These TLS 1.2 cipher suites are blacklisted by the HTTP/2 spec. Clients
-	 * should reject servers that use any of these suites.
-	 * 
-	 * @see <a href="https://http2.github.io/http2-spec/#BadCipherSuites">HTTP/2
-	 *      TLS 1.2 Cipher Suite Black List</a>
-	 */
-	public static final String[] HTTP2_TLS_BAD_CIPHER_SUITES;
-
-	/**
 	 * Constructor.
 	 * 
 	 * @param server
@@ -96,9 +84,9 @@ public class HttpsServerHelper extends JettyServerHelper
 			final SslContextFactory jettySslContextFactory = new SslContextFactory();
 			jettySslContextFactory.setSslContext( sslContextFactory.createSslContext() );
 
-			if( this.getHttp2() || this.getHttp2c() )
-				// Make sure not to use blacklisted cipher suites
-				jettySslContextFactory.setExcludeCipherSuites( HTTP2_TLS_BAD_CIPHER_SUITES );
+			if( this.getHttp2() )
+				// Make sure not to use bad cipher suites with HTTP/2
+				jettySslContextFactory.setExcludeCipherSuites( Http2Utils.TLS_BAD_CIPHER_SUITES );
 
 			return AbstractConnectionFactory.getFactories( jettySslContextFactory, connectionFactories );
 		}
@@ -107,33 +95,5 @@ public class HttpsServerHelper extends JettyServerHelper
 			getLogger().log( Level.WARNING, "Unable to create the Jetty SSL context factory", e );
 			return null;
 		}
-	}
-
-	static
-	{
-		final ArrayList<String> ciphers = new ArrayList<String>();
-		final String name = HttpsServerHelper.class.getPackage().getName().replaceAll( "\\.", "/" ) + "/http2_tls_bad_cipher_suites.txt";
-		final BufferedReader reader = new BufferedReader( new InputStreamReader( HttpsServerHelper.class.getClassLoader().getResourceAsStream( name ) ) );
-		try
-		{
-			try
-			{
-				String line = reader.readLine();
-				while( line != null )
-				{
-					ciphers.add( line.trim() );
-					line = reader.readLine();
-				}
-			}
-			finally
-			{
-				reader.close();
-			}
-		}
-		catch( IOException e )
-		{
-			throw new RuntimeException( e );
-		}
-		HTTP2_TLS_BAD_CIPHER_SUITES = ciphers.toArray( new String[ciphers.size()] );
 	}
 }

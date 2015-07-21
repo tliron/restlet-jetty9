@@ -184,7 +184,7 @@ public class JettyClientCall extends ClientCall
 	@Override
 	public String getServerAddress()
 	{
-		return httpRequest.getURI().getHost();
+		return getHttpRequest().getURI().getHost();
 	}
 
 	/**
@@ -231,8 +231,7 @@ public class JettyClientCall extends ClientCall
 			// Ensure that the connection is active
 			inputStreamResponseListener = new InputStreamResponseListener();
 			httpRequest.send( inputStreamResponseListener );
-			long timeout = 5000; // TODO: this should be configurable
-			httpResponse = (HttpResponse) inputStreamResponseListener.get( timeout, TimeUnit.MILLISECONDS );
+			httpResponse = (HttpResponse) inputStreamResponseListener.get( clientHelper.getTimeout(), TimeUnit.MILLISECONDS );
 
 			result = new Status( getStatusCode(), getReasonPhrase() );
 		}

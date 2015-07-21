@@ -18,7 +18,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.restlet.Server;
@@ -82,8 +81,7 @@ public class JettyHandler extends AbstractHandler
 		if( request.isHandled() )
 			return;
 
-		final HttpChannel channel = request.getHttpChannel();
-		helper.handle( new JettyServerCall( helper.getHelped(), channel ) );
+		helper.handle( new JettyServerCall( helper.getHelped(), request.getHttpChannel() ) );
 
 		request.setHandled( true );
 	}
