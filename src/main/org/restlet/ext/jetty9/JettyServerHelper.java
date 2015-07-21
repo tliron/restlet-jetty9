@@ -490,13 +490,13 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 	}
 
 	/**
-	 * Whether to support HTTP/2 cleartext (unencrypted). Defaults to true.
+	 * Whether to support HTTP/2 cleartext (unencrypted). Defaults to false.
 	 * 
 	 * @return HTTP/2 cleartext support.
 	 */
 	public boolean getHttp2c()
 	{
-		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "http.2c", "true" ) );
+		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "http.2c", "false" ) );
 	}
 
 	/**
