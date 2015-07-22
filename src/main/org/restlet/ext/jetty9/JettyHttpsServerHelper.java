@@ -53,7 +53,7 @@ import org.restlet.ext.jetty9.internal.Http2Utils;
  * @author Jerome Louvel
  * @author Tal Liron
  */
-public class HttpsServerHelper extends JettyServerHelper
+public class JettyHttpsServerHelper extends JettyServerHelper
 {
 	/**
 	 * Constructor.
@@ -61,7 +61,7 @@ public class HttpsServerHelper extends JettyServerHelper
 	 * @param server
 	 *        The server to help.
 	 */
-	public HttpsServerHelper( Server server )
+	public JettyHttpsServerHelper( Server server )
 	{
 		super( server );
 		getProtocols().add( Protocol.HTTPS );

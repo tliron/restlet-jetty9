@@ -32,6 +32,7 @@ import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.engine.adapter.ClientCall;
+import org.restlet.engine.adapter.HttpClientHelper;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.ext.jetty9.internal.JettyClientCall;
@@ -173,7 +174,7 @@ import org.restlet.ext.jetty9.internal.JettyClientCall;
  * @author Jerome Louvel
  * @author Tal Liron
  */
-public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelper
+public class JettyHttpClientHelper extends HttpClientHelper
 {
 	/**
 	 * Constructor.
@@ -181,7 +182,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 	 * @param client
 	 *        The client to help.
 	 */
-	public HttpClientHelper( Client client )
+	public JettyHttpClientHelper( Client client )
 	{
 		super( client );
 		getProtocols().add( Protocol.HTTP );

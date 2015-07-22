@@ -1,1 +1,2 @@
-org.restlet.ext.jetty9.HttpClientHelper		# HTTP, HTTPS
+# HTTP/1.1, HTTPS/1.1
+org.restlet.ext.jetty9.JettyHttpClientHelper

@@ -22,7 +22,7 @@ import org.restlet.data.Protocol;
  * @author Jerome Louvel
  * @author Tal Liron
  */
-public class HttpServerHelper extends JettyServerHelper
+public class JettyHttpServerHelper extends JettyServerHelper
 {
 	/**
 	 * Constructor.
@@ -30,7 +30,7 @@ public class HttpServerHelper extends JettyServerHelper
 	 * @param server
 	 *        The server to help.
 	 */
-	public HttpServerHelper( Server server )
+	public JettyHttpServerHelper( Server server )
 	{
 		super( server );
 		getProtocols().add( Protocol.HTTP );

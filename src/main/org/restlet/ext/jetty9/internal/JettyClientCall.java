@@ -36,7 +36,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.header.HeaderConstants;
-import org.restlet.ext.jetty9.HttpClientHelper;
+import org.restlet.ext.jetty9.JettyHttpClientHelper;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -60,7 +60,7 @@ public class JettyClientCall extends ClientCall
 	 * @throws IOException
 	 *         In case of an I/O error
 	 */
-	public JettyClientCall( HttpClientHelper helper, final String method, final String requestUri ) throws IOException
+	public JettyClientCall( JettyHttpClientHelper helper, final String method, final String requestUri ) throws IOException
 	{
 		super( helper, method, requestUri );
 		clientHelper = helper;
@@ -288,7 +288,7 @@ public class JettyClientCall extends ClientCall
 	/**
 	 * The associated HTTP client.
 	 */
-	private final HttpClientHelper clientHelper;
+	private final JettyHttpClientHelper clientHelper;
 
 	/**
 	 * The wrapped HTTP request.

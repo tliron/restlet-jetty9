@@ -39,6 +39,7 @@ import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.restlet.Server;
+import org.restlet.engine.adapter.HttpServerHelper;
 import org.restlet.ext.jetty9.internal.JettyServerCall;
 
 /**
@@ -280,7 +281,7 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * @author Jerome Louvel
  * @author Tal Liron
  */
-public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpServerHelper
+public abstract class JettyServerHelper extends HttpServerHelper
 {
 	/**
 	 * Constructor.

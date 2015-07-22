@@ -21,8 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.restlet.Server;
-import org.restlet.ext.jetty9.HttpServerHelper;
-import org.restlet.ext.jetty9.HttpsServerHelper;
+import org.restlet.ext.jetty9.JettyHttpServerHelper;
+import org.restlet.ext.jetty9.JettyHttpsServerHelper;
 import org.restlet.ext.jetty9.JettyServerHelper;
 
 /**
@@ -58,9 +58,9 @@ public class JettyHandler extends AbstractHandler
 	public JettyHandler( Server server, boolean secure )
 	{
 		if( secure )
-			helper = new HttpsServerHelper( server );
+			helper = new JettyHttpsServerHelper( server );
 		else
-			helper = new HttpServerHelper( server );
+			helper = new JettyHttpServerHelper( server );
 	}
 
 	/**
