@@ -23,6 +23,7 @@ import java.util.logging.Level;
 
 import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.server.HttpChannel;
+import org.eclipse.jetty.server.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Header;
@@ -170,15 +171,21 @@ public class JettyServerCall extends ServerCall
 		if( !requestHeadersAdded )
 		{
 			// Copy the headers from the request object
-			for( Enumeration<String> names = getChannel().getRequest().getHeaderNames(); names.hasMoreElements(); )
+			final Request request = getChannel().getRequest();
+			for( Enumeration<String> names = request.getHeaderNames(); names.hasMoreElements(); )
 			{
 				final String headerName = names.nextElement();
-				for( Enumeration<String> values = getChannel().getRequest().getHeaders( headerName ); values.hasMoreElements(); )
+				for( Enumeration<String> values = request.getHeaders( headerName ); values.hasMoreElements(); )
 				{
 					final String headerValue = values.nextElement();
 					result.add( headerName, headerValue );
 				}
 			}
+
+			// HTTP/2 does not have a Host header
+			// See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=473118
+			if( result.getFirstValue( "host", true ) == null )
+				result.set( "Host", request.getServerName() + ":" + request.getServerPort() );
 
 			requestHeadersAdded = true;
 		}
