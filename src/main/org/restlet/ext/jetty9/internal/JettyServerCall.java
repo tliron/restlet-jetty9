@@ -27,6 +27,7 @@ import org.eclipse.jetty.server.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Header;
+import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.adapter.ServerCall;
 import org.restlet.util.Series;
@@ -185,7 +186,17 @@ public class JettyServerCall extends ServerCall
 			// HTTP/2 does not have a Host header
 			// See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=473118
 			if( result.getFirstValue( "host", true ) == null )
-				result.set( "Host", request.getServerName() + ":" + request.getServerPort() );
+			{
+				final String scheme = request.getScheme();
+				final String server = request.getServerName();
+				final int port = request.getServerPort();
+
+				if( scheme.equalsIgnoreCase( Protocol.HTTP.getSchemeName() ) && ( port == Protocol.HTTP.getDefaultPort() )
+					|| scheme.equalsIgnoreCase( Protocol.HTTPS.getSchemeName() ) && ( port == Protocol.HTTPS.getDefaultPort() ) )
+					result.set( "Host", server );
+				else
+					result.set( "Host", server + ":" + port );
+			}
 
 			requestHeadersAdded = true;
 		}
