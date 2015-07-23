@@ -124,7 +124,7 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * <tr>
  * <td>http.2c</td>
  * <td>boolean</td>
- * <td>true</td>
+ * <td>false</td>
  * <td>Whether to support HTTP/2 cleartext (unencrypted)</td>
  * </tr>
  * <tr>
