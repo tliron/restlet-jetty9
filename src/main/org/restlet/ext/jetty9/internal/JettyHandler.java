@@ -61,6 +61,7 @@ public class JettyHandler extends AbstractHandler
 			helper = new JettyHttpsServerHelper( server );
 		else
 			helper = new JettyHttpServerHelper( server );
+		ensureHostHeader = helper.getEnsureHostHeader();
 	}
 
 	/**
@@ -81,7 +82,7 @@ public class JettyHandler extends AbstractHandler
 		if( request.isHandled() )
 			return;
 
-		helper.handle( new JettyServerCall( helper.getHelped(), request.getHttpChannel() ) );
+		helper.handle( new JettyServerCall( helper.getHelped(), request.getHttpChannel(), ensureHostHeader ) );
 
 		request.setHandled( true );
 	}
@@ -102,4 +103,7 @@ public class JettyHandler extends AbstractHandler
 
 	/** The Restlet server helper. */
 	private final JettyServerHelper helper;
+
+	/** Whether to generate a Host header if not provided by the request. */
+	private final boolean ensureHostHeader;
 }

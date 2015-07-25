@@ -13,6 +13,8 @@
 package org.restlet.ext.jetty9;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.nio.channels.ServerSocketChannel;
 import java.util.Arrays;
@@ -21,9 +23,6 @@ import java.util.concurrent.Executor;
 
 import javax.servlet.ServletException;
 
-import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
-import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
-import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -114,6 +113,12 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * <td>30000</td>
  * <td>Connector stop timeout in milliseconds; the maximum time allowed for the
  * service to shutdown</td>
+ * </tr>
+ * <tr>
+ * <td>ensureHostHeader</td>
+ * <td>boolean</td>
+ * <td>true</td>
+ * <td>Whether to generate a Host header if not provided by the request</td>
  * </tr>
  * <tr>
  * <td>http.2</td>
@@ -478,6 +483,17 @@ public abstract class JettyServerHelper extends HttpServerHelper
 	}
 
 	/**
+	 * Whether to generate a Host header if not provided by the request.
+	 * Defaults to true.
+	 * 
+	 * @return Whether to generate a Host header
+	 */
+	public boolean getEnsureHostHeader()
+	{
+		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "ensureHostHeader", "true" ) );
+	}
+
+	/**
 	 * Whether to support HTTP/2. Defaults to false.
 	 * 
 	 * @return HTTP/2 support.
@@ -770,19 +786,19 @@ public abstract class JettyServerHelper extends HttpServerHelper
 			NegotiatingServerConnectionFactory.checkProtocolNegotiationAvailable();
 
 			// ALPN negotiator
-			negotiator = new ALPNServerConnectionFactory();
+			negotiator = createDynamically( "org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory", "" );
 		}
 
 		// HTTP/2
 		if( getHttp2() )
-			connectionFactories.add( new HTTP2ServerConnectionFactory( configuration ) );
+			connectionFactories.add( createDynamically( "org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory", configuration ) );
 
 		// HTTP/1.1
 		connectionFactories.add( new HttpConnectionFactory( configuration ) );
 
 		// HTTP/2 cleartext
 		if( getHttp2c() )
-			connectionFactories.add( new HTTP2CServerConnectionFactory( configuration ) );
+			connectionFactories.add( createDynamically( "org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory", configuration ) );
 
 		if( negotiator != null )
 		{
@@ -970,6 +986,7 @@ public abstract class JettyServerHelper extends HttpServerHelper
 		{
 			super( threadPool );
 			this.helper = helper;
+			ensureHostHeader = helper.getEnsureHostHeader();
 		}
 
 		/**
@@ -983,7 +1000,7 @@ public abstract class JettyServerHelper extends HttpServerHelper
 		{
 			try
 			{
-				helper.handle( new JettyServerCall( helper.getHelped(), channel ) );
+				helper.handle( new JettyServerCall( helper.getHelped(), channel, ensureHostHeader ) );
 			}
 			catch( Throwable e )
 			{
@@ -1000,6 +1017,60 @@ public abstract class JettyServerHelper extends HttpServerHelper
 		}
 
 		private final JettyServerHelper helper;
+
+		private final boolean ensureHostHeader;
+	}
+
+	/**
+	 * Creates a class instance dynamically, via reflection.
+	 * 
+	 * @param className
+	 *        The class name
+	 * @param params
+	 *        The optional params
+	 * @return The new instance
+	 */
+	private static <T> T createDynamically( String className, Object... params )
+	{
+		try
+		{
+			@SuppressWarnings("unchecked")
+			final Class<T> clazz = (Class<T>) Class.forName( className );
+			final int length = params.length;
+			final Class<?>[] classes = new Class<?>[length];
+			for( int i = 0; i < length; i++ )
+				classes[i] = params[i].getClass();
+			Constructor<T> constructor = clazz.getConstructor( classes );
+			return constructor.newInstance( params );
+		}
+		catch( ClassNotFoundException x )
+		{
+			throw new NoClassDefFoundError( className );
+		}
+		catch( NoSuchMethodException x )
+		{
+			throw new RuntimeException( x );
+		}
+		catch( SecurityException x )
+		{
+			throw new RuntimeException( x );
+		}
+		catch( InstantiationException x )
+		{
+			throw new RuntimeException( x );
+		}
+		catch( IllegalAccessException x )
+		{
+			throw new RuntimeException( x );
+		}
+		catch( IllegalArgumentException x )
+		{
+			throw new RuntimeException( x );
+		}
+		catch( InvocationTargetException x )
+		{
+			throw new RuntimeException( x );
+		}
 	}
 
 	/** The wrapped Jetty server. */

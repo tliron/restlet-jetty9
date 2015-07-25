@@ -47,11 +47,14 @@ public class JettyServerCall extends ServerCall
 	 *        The parent server.
 	 * @param channel
 	 *        The wrapped Jetty HTTP channel.
+	 * @param ensureHostHeader
+	 *        Whether to generate a Host header if not provided by the request
 	 */
-	public JettyServerCall( Server server, HttpChannel channel )
+	public JettyServerCall( Server server, HttpChannel channel, boolean ensureHostHeader )
 	{
 		super( server );
 		this.channel = channel;
+		this.ensureHostHeader = ensureHostHeader;
 	}
 
 	/**
@@ -185,7 +188,7 @@ public class JettyServerCall extends ServerCall
 
 			// HTTP/2 does not have a Host header
 			// See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=473118
-			if( result.getFirstValue( "host", true ) == null )
+			if( ensureHostHeader && ( result.getFirstValue( "host", true ) == null ) )
 			{
 				final String scheme = request.getScheme();
 				final String server = request.getServerName();
@@ -320,6 +323,9 @@ public class JettyServerCall extends ServerCall
 
 	/** The wrapped Jetty HTTP channel. */
 	private final HttpChannel channel;
+
+	/** Whether to generate a Host header if not provided by the request. */
+	private final boolean ensureHostHeader;
 
 	/** Indicates if the request headers were parsed and added. */
 	private volatile boolean requestHeadersAdded;
