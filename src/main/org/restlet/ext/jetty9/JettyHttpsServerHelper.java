@@ -84,7 +84,17 @@ public class JettyHttpsServerHelper extends JettyServerHelper
 			final SslContextFactory jettySslContextFactory = new SslContextFactory();
 			jettySslContextFactory.setSslContext( sslContextFactory.createSslContext() );
 
-			if( this.getHttp2() )
+			boolean h2 = getHttp2();
+			for( Protocol protocol : getHelped().getProtocols() )
+			{
+				if( protocol.getName().equals( Http2.HTTPS_PROTOCOL.getName() ) && protocol.getVersion().equals( Http2.HTTPS_PROTOCOL.getVersion() ) )
+				{
+					h2 = true;
+					break;
+				}
+			}
+
+			if( h2 )
 				// Make sure not to use bad cipher suites with HTTP/2
 				jettySslContextFactory.setExcludeCipherSuites( Http2.TLS_BAD_CIPHER_SUITES );
 

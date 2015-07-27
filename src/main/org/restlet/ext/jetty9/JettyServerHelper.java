@@ -782,6 +782,7 @@ public abstract class JettyServerHelper extends HttpServerHelper
 
 		boolean h2 = getHttp2();
 		boolean h2c = getHttp2c();
+		boolean legacy = false;
 
 		for( Protocol protocol : getHelped().getProtocols() )
 		{
@@ -789,6 +790,10 @@ public abstract class JettyServerHelper extends HttpServerHelper
 				h2 = true;
 			else if( protocol.getName().equals( Http2.HTTP_PROTOCOL.getName() ) && protocol.getVersion().equals( Http2.HTTP_PROTOCOL.getVersion() ) )
 				h2c = true;
+			else if( protocol.getName().equals( Protocol.HTTP.getName() ) && protocol.getVersion().equals( Protocol.HTTP.getVersion() ) )
+				legacy = true;
+			else if( protocol.getName().equals( Protocol.HTTPS.getName() ) && protocol.getVersion().equals( Protocol.HTTPS.getVersion() ) )
+				legacy = true;
 		}
 
 		if( h2 )
@@ -806,10 +811,12 @@ public abstract class JettyServerHelper extends HttpServerHelper
 			connectionFactories.add( createDynamically( "org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory", configuration ) );
 
 		// HTTP/1.1
-		connectionFactories.add( new HttpConnectionFactory( configuration ) );
+		if( legacy )
+			connectionFactories.add( new HttpConnectionFactory( configuration ) );
 
 		// HTTP/2 cleartext
 		if( h2c )
+			// Must be *after* legacy
 			connectionFactories.add( createDynamically( "org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory", configuration ) );
 
 		if( negotiator != null )
