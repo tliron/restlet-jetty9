@@ -38,6 +38,7 @@ import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.restlet.Server;
+import org.restlet.data.Protocol;
 import org.restlet.engine.adapter.HttpServerHelper;
 import org.restlet.ext.jetty9.internal.JettyServerCall;
 
@@ -779,7 +780,18 @@ public abstract class JettyServerHelper extends HttpServerHelper
 
 		NegotiatingServerConnectionFactory negotiator = null;
 
-		if( getHttp2() )
+		boolean h2 = getHttp2();
+		boolean h2c = getHttp2c();
+
+		for( Protocol protocol : getHelped().getProtocols() )
+		{
+			if( protocol.getName().equals( Http2.HTTPS_PROTOCOL.getName() ) && protocol.getVersion().equals( Http2.HTTPS_PROTOCOL.getVersion() ) )
+				h2 = true;
+			else if( protocol.getName().equals( Http2.HTTP_PROTOCOL.getName() ) && protocol.getVersion().equals( Http2.HTTP_PROTOCOL.getVersion() ) )
+				h2c = true;
+		}
+
+		if( h2 )
 		{
 			// This will throw an exception if protocol negotiation is not
 			// available
@@ -790,14 +802,14 @@ public abstract class JettyServerHelper extends HttpServerHelper
 		}
 
 		// HTTP/2
-		if( getHttp2() )
+		if( h2 )
 			connectionFactories.add( createDynamically( "org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory", configuration ) );
 
 		// HTTP/1.1
 		connectionFactories.add( new HttpConnectionFactory( configuration ) );
 
 		// HTTP/2 cleartext
-		if( getHttp2c() )
+		if( h2c )
 			connectionFactories.add( createDynamically( "org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory", configuration ) );
 
 		if( negotiator != null )

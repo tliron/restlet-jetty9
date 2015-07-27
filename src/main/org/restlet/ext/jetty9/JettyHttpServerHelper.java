@@ -34,5 +34,6 @@ public class JettyHttpServerHelper extends JettyServerHelper
 	{
 		super( server );
 		getProtocols().add( Protocol.HTTP );
+		getProtocols().add( Http2.HTTP_PROTOCOL );
 	}
 }

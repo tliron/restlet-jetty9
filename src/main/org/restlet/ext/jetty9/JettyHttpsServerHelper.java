@@ -22,7 +22,6 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.engine.ssl.SslUtils;
-import org.restlet.ext.jetty9.internal.Http2Utils;
 
 /**
  * Jetty 9 HTTPS server connector. Here is the list of additional parameters
@@ -65,6 +64,7 @@ public class JettyHttpsServerHelper extends JettyServerHelper
 	{
 		super( server );
 		getProtocols().add( Protocol.HTTPS );
+		getProtocols().add( Http2.HTTPS_PROTOCOL );
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class JettyHttpsServerHelper extends JettyServerHelper
 
 			if( this.getHttp2() )
 				// Make sure not to use bad cipher suites with HTTP/2
-				jettySslContextFactory.setExcludeCipherSuites( Http2Utils.TLS_BAD_CIPHER_SUITES );
+				jettySslContextFactory.setExcludeCipherSuites( Http2.TLS_BAD_CIPHER_SUITES );
 
 			return AbstractConnectionFactory.getFactories( jettySslContextFactory, connectionFactories );
 		}

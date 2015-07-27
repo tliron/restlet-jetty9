@@ -10,20 +10,28 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.jetty9.internal;
+package org.restlet.ext.jetty9;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import org.restlet.data.Protocol;
+
 /**
  * HTTP/2 utilities.
  * 
  * @author Tal Liron
  */
-public class Http2Utils
+public class Http2
 {
+	/** HTTPS protocol version 2 (Secure). */
+	public static final Protocol HTTPS_PROTOCOL = new Protocol( "https", "HTTPS", "HTTP", "HyperText Transport Protocol (Secure)", 443, true, "2" );
+
+	/** HTTP protocol version 2 (cleartext). */
+	public static final Protocol HTTP_PROTOCOL = new Protocol( "http", "HTTP", "HyperText Transport Protocol", 80, "2" );
+
 	/**
 	 * These TLS 1.2 cipher suites are blacklisted by the HTTP/2 spec. Clients
 	 * should reject servers that use any of these suites.
@@ -36,8 +44,8 @@ public class Http2Utils
 	static
 	{
 		final ArrayList<String> ciphers = new ArrayList<String>();
-		final String name = Http2Utils.class.getPackage().getName().replaceAll( "\\.", "/" ) + "/http2_tls_bad_cipher_suites.txt";
-		final BufferedReader reader = new BufferedReader( new InputStreamReader( Http2Utils.class.getClassLoader().getResourceAsStream( name ) ) );
+		final String name = Http2.class.getPackage().getName().replaceAll( "\\.", "/" ) + "/internal/http2_tls_bad_cipher_suites.txt";
+		final BufferedReader reader = new BufferedReader( new InputStreamReader( Http2.class.getClassLoader().getResourceAsStream( name ) ) );
 		try
 		{
 			try
