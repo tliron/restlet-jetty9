@@ -122,18 +122,6 @@ import org.restlet.ext.jetty9.internal.JettyServerCall;
  * <td>Whether to generate a Host header if not provided by the request</td>
  * </tr>
  * <tr>
- * <td>http.2</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>Whether to support HTTP/2</td>
- * </tr>
- * <tr>
- * <td>http.2c</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>Whether to support HTTP/2 cleartext (unencrypted)</td>
- * </tr>
- * <tr>
  * <td>http.delayDispatchUntilContent</td>
  * <td>boolean</td>
  * <td>true</td>
@@ -495,26 +483,6 @@ public abstract class JettyServerHelper extends HttpServerHelper
 	}
 
 	/**
-	 * Whether to support HTTP/2. Defaults to false.
-	 * 
-	 * @return HTTP/2 support.
-	 */
-	public boolean getHttp2()
-	{
-		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "http.2", "false" ) );
-	}
-
-	/**
-	 * Whether to support HTTP/2 cleartext (unencrypted). Defaults to false.
-	 * 
-	 * @return HTTP/2 cleartext support.
-	 */
-	public boolean getHttp2c()
-	{
-		return Boolean.parseBoolean( getHelpedParameters().getFirstValue( "http.2c", "false" ) );
-	}
-
-	/**
 	 * If true, delay the application dispatch until content is available.
 	 * Defaults to true.
 	 * 
@@ -780,8 +748,8 @@ public abstract class JettyServerHelper extends HttpServerHelper
 
 		NegotiatingServerConnectionFactory negotiator = null;
 
-		boolean h2 = getHttp2();
-		boolean h2c = getHttp2c();
+		boolean h2 = false;
+		boolean h2c = false;
 		boolean legacy = false;
 
 		for( Protocol protocol : getHelped().getProtocols() )

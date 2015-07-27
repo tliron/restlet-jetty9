@@ -17,6 +17,9 @@ import org.restlet.data.Protocol;
 
 /**
  * Jetty 9 HTTP server connector.
+ * <p>
+ * It supports both HTTP/2 cleartext ({@link Http2#HTTP_PROTOCOL}) and legacy
+ * HTTP/1.1 ( {@link Protocol#HTTP}). Both can be supported by the same server.
  * 
  * @see <a href="http://www.eclipse.org/jetty/">Jetty home page</a>
  * @author Jerome Louvel
@@ -33,7 +36,7 @@ public class JettyHttpServerHelper extends JettyServerHelper
 	public JettyHttpServerHelper( Server server )
 	{
 		super( server );
-		getProtocols().add( Protocol.HTTP );
 		getProtocols().add( Http2.HTTP_PROTOCOL );
+		getProtocols().add( Protocol.HTTP );
 	}
 }

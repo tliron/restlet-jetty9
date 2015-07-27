@@ -24,9 +24,13 @@ import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.engine.ssl.SslUtils;
 
 /**
- * Jetty 9 HTTPS server connector. Here is the list of additional parameters
- * that are supported. They should be set in the Server's context before it is
- * started:
+ * Jetty 9 HTTPS server connector.
+ * <p>
+ * It supports both HTTP/2 ({@link Http2#HTTPS_PROTOCOL}) and legacy HTTP/1.1 (
+ * {@link Protocol#HTTPS}). Both can be supported by the same server.
+ * <p>
+ * Here is the list of additional parameters that are supported. They should be
+ * set in the Server's context before it is started:
  * <table summary="parameters">
  * <tr>
  * <th>Parameter name</th>
@@ -63,8 +67,8 @@ public class JettyHttpsServerHelper extends JettyServerHelper
 	public JettyHttpsServerHelper( Server server )
 	{
 		super( server );
-		getProtocols().add( Protocol.HTTPS );
 		getProtocols().add( Http2.HTTPS_PROTOCOL );
+		getProtocols().add( Protocol.HTTPS );
 	}
 
 	/**
@@ -84,7 +88,7 @@ public class JettyHttpsServerHelper extends JettyServerHelper
 			final SslContextFactory jettySslContextFactory = new SslContextFactory();
 			jettySslContextFactory.setSslContext( sslContextFactory.createSslContext() );
 
-			boolean h2 = getHttp2();
+			boolean h2 = false;
 			for( Protocol protocol : getHelped().getProtocols() )
 			{
 				if( protocol.getName().equals( Http2.HTTPS_PROTOCOL.getName() ) && protocol.getVersion().equals( Http2.HTTPS_PROTOCOL.getVersion() ) )
