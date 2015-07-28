@@ -4,10 +4,10 @@ Jetty 9 connector for Restlet 2.2+
 This Restlet extension allows you to use [Jetty](http://www.eclipse.org/jetty/) 9.3 as both a
 server and client connector, for both HTTP and HTTPS. HTTP/2 is supported for the server connector.
 
-Note that Jetty 9.3 requires JVM of at least version 8.
+Note that Jetty 9.3 requires a JVM of at least version 8.
 
-As discussed in [this issue](https://github.com/restlet/restlet-framework-java/issues/1108) and
-in the [Restlet forum](http://restlet.tigris.org/ds/viewMessage.do?dsForumId=4447&dsMessageId=3067974).
+See also [this issue](https://github.com/restlet/restlet-framework-java/issues/1108) and
+the [Restlet forum](http://restlet.tigris.org/ds/viewMessage.do?dsForumId=4447&dsMessageId=3067974).
 
 
 HTTP/2 Server
@@ -30,7 +30,7 @@ that supports both HTTP/2 and legacy HTTP/1.1:
 
     import org.restlet.Server;
     import org.restlet.ext.jetty9.Http2;
-    Server server = new Server(Http2.HTTPS_PROTOCOL, 8081)
+    Server server = new Server(Http2.HTTPS_PROTOCOL, 443)
     server.getProtocols().add(Protocol.HTTPS)
     component.getServers().add(server)
 
