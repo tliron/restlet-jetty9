@@ -14,8 +14,8 @@ The repository includes an Eclipse project. Build using Maven.
 HTTP/2 Server
 -------------
 
-1) Dependencies: you need not Jetty [HTTP/2 server](http://mvnrepository.com/artifact/org.eclipse.jetty.http2/http2-server)
-and [HPACK](http://mvnrepository.com/artifact/org.eclipse.jetty.http2/http2-hpack), and also an
+1) Dependencies: Jetty [HTTP/2 server](http://mvnrepository.com/artifact/org.eclipse.jetty.http2/http2-server)
+and [HPACK](http://mvnrepository.com/artifact/org.eclipse.jetty.http2/http2-hpack), as well as an
 [ALPN boot solution](http://mvnrepository.com/artifact/org.mortbay.jetty.alpn/alpn-boot).
 
 2) The ALPN boot jar needs to be added to the [JVM's boot classpath](https://www.eclipse.org/jetty/documentation/current/alpn-chapter.html).
@@ -23,7 +23,7 @@ E.g.:
 
     java -Xbootclasspath/p:<path_to_alpn_boot_jar> ...
 
-4) You need to configure your [Server](http://restlet.com/technical-resources/restlet-framework/javadocs/2.3/jse/api/index.html?org/restlet/Server.html)
+3) You need to configure your [Server](http://restlet.com/technical-resources/restlet-framework/javadocs/2.3/jse/api/index.html?org/restlet/Server.html)
 for HTTP/2. As of Restlet 2.3, the [Protocol class](http://restlet.com/technical-resources/restlet-framework/javadocs/2.3/jse/api/index.html?org/restlet/data/Protocol.html)
 does not have HTTP version 2 constants, but they are available in this driver in the [Http2 utility class]
 (http://threecrickets.com/api/java/restlet-jetty9/index.html?org/restlet/ext/jetty9/Http2.html). Here's some pseudo-code to create a server
