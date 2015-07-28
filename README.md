@@ -7,9 +7,8 @@ server and client connector, for both HTTP and HTTPS. HTTP/2 is supported for th
 Note that Jetty 9.3 requires JVM of at least version 8.
 
 As discussed in [this issue](https://github.com/restlet/restlet-framework-java/issues/1108) and
-in the [Restlet forum](http://restlet.tigris.org/ds/viewMessage.do?dsForumId=4447&dsMessageId=3067974)
+in the [Restlet forum](http://restlet.tigris.org/ds/viewMessage.do?dsForumId=4447&dsMessageId=3067974).
 
-The repository includes an Eclipse project. Build using Maven.
 
 HTTP/2 Server
 -------------
@@ -34,6 +33,7 @@ that supports both HTTP/2 and legacy HTTP/1.1:
     Server server = new Server(Http2.HTTPS_PROTOCOL, 8081)
     server.getProtocols().add(Protocol.HTTPS)
     component.getServers().add(server)
+
 
 HTTP/2 Cleartext Server
 -----------------------
@@ -67,6 +67,12 @@ To install via Maven:
 	</dependency>
 
 Hosted by [Three Crickets](http://threecrickets.com/repository/).
+
+
+Build It
+--------
+
+The repository includes an Eclipse project. Build using Maven.
 
 Legal
 -----
