@@ -81,4 +81,4 @@ Distributed under the [Apache License, Version 2.0](http://www.apache.org/licens
 
 The code is copyright Three Crickets LLC and Restlet S.A.S.
 
-"Restlet" is a registered trademark of [Restlet S.A.S.](http://restlet.org/download/legal).
+"Restlet" is a registered trademark of [Restlet S.A.S.](http://restlet.com/legal/).

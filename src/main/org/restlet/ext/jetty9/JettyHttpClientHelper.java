@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2015 Three Crickets LLC and Restlet S.A.S.
+ * Copyright 2014-2016 Three Crickets LLC and Restlet S.A.S.
  * <p>
  * The contents of this file are subject to the terms of the Jetty 2.0 license:
  * http://www.opensource.org/licenses/apache-2.0
